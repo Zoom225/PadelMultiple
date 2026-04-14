@@ -1,0 +1,22 @@
+package com.padel.padel_backend.service;
+
+
+import com.padel.padel_backend.entity.Match;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface MatchService {
+    Match create(Match match, Long organisateurId, Long terrainId);
+    Match getById(Long id);
+    List<Match> getAll();
+    List<Match> getPublicAvailableMatches();
+    List<Match> getBySiteId(Long siteId);
+    List<Match> getByOrganisateurId(Long organisateurId);
+    void convertToPublic(Long matchId);
+    void checkAndConvertExpiredPrivateMatches();
+    void incrementPlayers(Long matchId);
+    void decrementPlayers(Long matchId);
+    boolean isMatchFull(Long matchId);
+    boolean isSlotAvailable(Long terrainId, LocalDate date);
+}
