@@ -1,6 +1,6 @@
-package com.padel.padel_backend.dto.response;
+package com.padelPlay.dto.response;
 
-import com.padel.padel_backend.entity.enums.TypeMembre;
+import com.padelPlay.entity.enums.TypeMembre;
 import lombok.*;
 
 @Getter

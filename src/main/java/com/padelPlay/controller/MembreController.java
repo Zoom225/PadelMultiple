@@ -1,12 +1,12 @@
 package com.padelPlay.controller;
 
-import com.padel.padel_backend.dto.request.MembreRequest;
-import com.padel.padel_backend.dto.response.MembreResponse;
-import com.padel.padel_backend.entity.Membre;
-import com.padel.padel_backend.entity.Site;
-import com.padel.padel_backend.mapper.MembreMapper;
-import com.padel.padel_backend.service.MembreService;
-import com.padel.padel_backend.service.SiteService;
+import com.padelPlay.dto.request.MembreRequest;
+import com.padelPlay.dto.response.MembreResponse;
+import com.padelPlay.entity.Membre;
+import com.padelPlay.entity.Site;
+import com.padelPlay.mapper.MembreMapper;
+import com.padelPlay.service.MembreService;
+import com.padelPlay.service.SiteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

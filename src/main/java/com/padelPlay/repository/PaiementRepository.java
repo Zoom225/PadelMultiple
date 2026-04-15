@@ -1,7 +1,7 @@
-package com.padel.padel_backend.repository;
+package com.padelPlay.repository;
 
-import com.padel.padel_backend.entity.Paiement;
-import com.padel.padel_backend.entity.enums.StatutPaiement;
+import com.padelPlay.entity.Paiement;
+import com.padelPlay.entity.enums.StatutPaiement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

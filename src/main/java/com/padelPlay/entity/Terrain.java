@@ -1,4 +1,4 @@
-package com.padel.padel_backend.entity;
+package com.padelPlay.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

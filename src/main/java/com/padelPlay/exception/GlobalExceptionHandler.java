@@ -1,4 +1,4 @@
-package com.padel.padel_backend.exception;
+package com.padelPlay.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

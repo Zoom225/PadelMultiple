@@ -1,6 +1,6 @@
-package com.padel.padel_backend.entity;
+package com.padelPlay.entity;
 
-import com.padel.padel_backend.entity.enums.StatutReservation;
+import com.padelPlay.entity.enums.StatutReservation;
 import jakarta.persistence.*;
 import lombok.*;
 

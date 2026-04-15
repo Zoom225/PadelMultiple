@@ -1,6 +1,6 @@
-package com.padel.padel_backend.repository;
+package com.padelPlay.repository;
 
-import com.padel.padel_backend.entity.JourFermeture;
+import com.padelPlay.entity.JourFermeture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

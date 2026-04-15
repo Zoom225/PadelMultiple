@@ -1,8 +1,8 @@
-package com.padel.padel_backend.mapper;
+package com.padelPlay.mapper;
 
-import com.padel.padel_backend.dto.request.MatchRequest;
-import com.padel.padel_backend.dto.response.MatchResponse;
-import com.padel.padel_backend.entity.Match;
+import com.padelPlay.dto.request.MatchRequest;
+import com.padelPlay.dto.response.MatchResponse;
+import com.padelPlay.entity.Match;
 import org.springframework.stereotype.Component;
 
 @Component

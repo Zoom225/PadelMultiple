@@ -1,7 +1,7 @@
-package com.padel.padel_backend.service;
+package com.padelPlay.service;
 
-import com.padel.padel_backend.dto.request.LoginRequest;
-import com.padel.padel_backend.dto.response.LoginResponse;
+import com.padelPlay.dto.request.LoginRequest;
+import com.padelPlay.dto.response.LoginResponse;
 
 public interface AuthService {
     LoginResponse login(LoginRequest request);

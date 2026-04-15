@@ -1,4 +1,4 @@
-package com.padel.padel_backend.exception;
+package com.padelPlay.exception;
 
 public class BusinessException extends RuntimeException {
     public BusinessException(String message) {

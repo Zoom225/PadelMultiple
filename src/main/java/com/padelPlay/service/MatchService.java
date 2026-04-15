@@ -1,7 +1,7 @@
-package com.padel.padel_backend.service;
+package com.padelPlay.service;
 
 
-import com.padel.padel_backend.entity.Match;
+import com.padelPlay.entity.Match;
 
 import java.time.LocalDate;
 import java.util.List;

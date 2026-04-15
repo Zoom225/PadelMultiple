@@ -1,6 +1,6 @@
-package com.padel.padel_backend.service;
+package com.padelPlay.service;
 
-import com.padel.padel_backend.entity.Membre;
+import com.padelPlay.entity.Membre;
 
 import java.util.List;
 

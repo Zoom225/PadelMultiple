@@ -1,9 +1,9 @@
-package com.padel.padel_backend.repository;
+package com.padelPlay.repository;
 
 
-import com.padel.padel_backend.entity.Match;
-import com.padel.padel_backend.entity.enums.StatutMatch;
-import com.padel.padel_backend.entity.enums.TypeMatch;
+import com.padelPlay.entity.Match;
+import com.padelPlay.entity.enums.StatutMatch;
+import com.padelPlay.entity.enums.TypeMatch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

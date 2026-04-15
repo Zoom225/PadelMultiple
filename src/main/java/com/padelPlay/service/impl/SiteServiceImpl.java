@@ -1,10 +1,10 @@
-package com.padel.padel_backend.service.impl;
+package com.padelPlay.service.impl;
 
 
-import com.padel.padel_backend.entity.Site;
-import com.padel.padel_backend.exception.ResourceNotFoundException;
-import com.padel.padel_backend.repository.SiteRepository;
-import com.padel.padel_backend.service.SiteService;
+import com.padelPlay.entity.Site;
+import com.padelPlay.exception.ResourceNotFoundException;
+import com.padelPlay.repository.SiteRepository;
+import com.padelPlay.service.SiteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
