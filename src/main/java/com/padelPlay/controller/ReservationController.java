@@ -1,10 +1,10 @@
 package com.padelPlay.controller;
 
-import com.padel.padel_backend.dto.request.ReservationRequest;
-import com.padel.padel_backend.dto.response.ReservationResponse;
-import com.padel.padel_backend.entity.Reservation;
-import com.padel.padel_backend.mapper.ReservationMapper;
-import com.padel.padel_backend.service.ReservationService;
+import com.padelPlay.dto.request.ReservationRequest;
+import com.padelPlay.dto.response.ReservationResponse;
+import com.padelPlay.entity.Reservation;
+import com.padelPlay.mapper.ReservationMapper;
+import com.padelPlay.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

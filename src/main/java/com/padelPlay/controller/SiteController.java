@@ -1,10 +1,10 @@
 package com.padelPlay.controller;
 
-import com.padel.padel_backend.dto.request.SiteRequest;
-import com.padel.padel_backend.dto.response.SiteResponse;
-import com.padel.padel_backend.entity.Site;
-import com.padel.padel_backend.mapper.SiteMapper;
-import com.padel.padel_backend.service.SiteService;
+import com.padelPlay.dto.request.SiteRequest;
+import com.padelPlay.dto.response.SiteResponse;
+import com.padelPlay.entity.Site;
+import com.padelPlay.mapper.SiteMapper;
+import com.padelPlay.service.SiteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

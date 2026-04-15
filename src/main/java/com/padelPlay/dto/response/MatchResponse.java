@@ -1,7 +1,7 @@
-package com.padel.padel_backend.dto.response;
+package com.padelPlay.dto.response;
 
-import com.padel.padel_backend.entity.enums.StatutMatch;
-import com.padel.padel_backend.entity.enums.TypeMatch;
+import com.padelPlay.entity.enums.StatutMatch;
+import com.padelPlay.entity.enums.TypeMatch;
 import lombok.*;
 
 import java.time.LocalDate;

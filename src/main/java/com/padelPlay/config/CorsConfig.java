@@ -1,4 +1,4 @@
-package com.padel.padel_backend.config;
+package com.padelPlay.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

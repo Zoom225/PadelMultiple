@@ -1,4 +1,4 @@
-package com.padel.padel_backend.entity.enums;
+package com.padelPlay.entity.enums;
 
 public enum TypeAdministrateur {
     GLOBAL,  // voit et gère tous les sites

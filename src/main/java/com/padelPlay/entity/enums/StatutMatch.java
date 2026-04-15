@@ -1,4 +1,4 @@
-package com.padel.padel_backend.entity.enums;
+package com.padelPlay.entity.enums;
 
 public enum StatutMatch {
     PLANIFIE,   // match créé, pas encore complet

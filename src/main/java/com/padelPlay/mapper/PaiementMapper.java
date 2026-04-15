@@ -1,7 +1,7 @@
-package com.padel.padel_backend.mapper;
+package com.padelPlay.mapper;
 
-import com.padel.padel_backend.dto.response.PaiementResponse;
-import com.padel.padel_backend.entity.Paiement;
+import com.padelPlay.dto.response.PaiementResponse;
+import com.padelPlay.entity.Paiement;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,4 +1,4 @@
-package com.padel.padel_backend.config;
+package com.padelPlay.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

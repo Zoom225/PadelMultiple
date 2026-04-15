@@ -1,4 +1,4 @@
-package com.padel.padel_backend.entity.enums;
+package com.padelPlay.entity.enums;
 
 public enum StatutPaiement {
     EN_ATTENTE,   // paiement pas encore effectué

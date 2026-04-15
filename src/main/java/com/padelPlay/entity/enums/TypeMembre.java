@@ -1,4 +1,4 @@
-package com.padel.padel_backend.entity.enums;
+package com.padelPlay.entity.enums;
 
 public enum TypeMembre {
     GLOBAL,   // Gxxxx — tous les sites, 3 semaines avant

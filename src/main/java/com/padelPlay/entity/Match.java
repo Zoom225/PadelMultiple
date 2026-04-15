@@ -1,8 +1,8 @@
-package com.padel.padel_backend.entity;
+package com.padelPlay.entity;
 
 
-import com.padel.padel_backend.entity.enums.StatutMatch;
-import com.padel.padel_backend.entity.enums.TypeMatch;
+import com.padelPlay.entity.enums.StatutMatch;
+import com.padelPlay.entity.enums.TypeMatch;
 import jakarta.persistence.*;
 import lombok.*;
 

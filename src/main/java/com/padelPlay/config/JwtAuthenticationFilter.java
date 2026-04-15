@@ -1,7 +1,7 @@
-package com.padel.padel_backend.config;
+package com.padelPlay.config;
 
-import com.padel.padel_backend.entity.Administrateur;
-import com.padel.padel_backend.repository.AdministrateurRepository;
+import com.padelPlay.entity.Administrateur;
+import com.padelPlay.repository.AdministrateurRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

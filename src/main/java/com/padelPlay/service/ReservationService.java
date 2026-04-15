@@ -1,6 +1,6 @@
-package com.padel.padel_backend.service;
+package com.padelPlay.service;
 
-import com.padel.padel_backend.entity.Reservation;
+import com.padelPlay.entity.Reservation;
 
 import java.util.List;
 

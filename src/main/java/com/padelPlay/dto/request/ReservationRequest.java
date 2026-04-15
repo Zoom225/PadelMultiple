@@ -1,4 +1,4 @@
-package com.padel.padel_backend.dto.request;
+package com.padelPlay.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

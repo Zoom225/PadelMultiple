@@ -1,4 +1,4 @@
-package com.padel.padel_backend.exception;
+package com.padelPlay.exception;
 
 import lombok.Builder;
 import lombok.Getter;

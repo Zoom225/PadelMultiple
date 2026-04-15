@@ -1,4 +1,4 @@
-package com.padel.padel_backend.dto.response;
+package com.padelPlay.dto.response;
 
 import lombok.*;
 
