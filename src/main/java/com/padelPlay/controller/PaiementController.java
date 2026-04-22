@@ -19,18 +19,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/paiements")
 @RequiredArgsConstructor
-@Tag(name = "Paiements", description = "Endpoints for managing match payments. " +
-        "A payment is automatically created in EN_ATTENTE status when a reservation is made. " +
-        "Payment lifecycle: " +
-        "EN_ATTENTE (created with reservation) → PAYE (payment confirmed) → REMBOURSE (if reservation cancelled). " +
-        "Business rules: " +
-        "- Each match costs 60€ divided by 4 players = 15€ per player. " +
-        "- Payment must be completed before the day of the match. " +
-        "- If a member has an outstanding balance, it is automatically added to their next payment. " +
-        "- If a player has not paid by the day before the match, their reservation is automatically cancelled " +
-        "  and the spot is freed for other members. " +
-        "- If the organizer of a public match ends up covering missing players, " +
-        "  the unpaid shares are added to their outstanding balance.")
+@Tag(name = "Paiements", description = "Endpoints de gestion des paiements des matchs " +
+        "Un paiement est automatiquement créé avec le statut EN_ATTENTE lorsqu'une réservation est effectuée." +
+        "Cycle de vie du paiement : " +
+        "EN_ATTENTE (créé lors de la réservation) → PAYÉ (paiement confirmé) → REMBOURSÉ (en cas d'annulation de la réservation)." +
+        " Règles métier : " +
+        "- Chaque match coûte 60 € divisés par 4 joueurs = 15 € par joueur." +
+        "- Le paiement doit être effectué avant le jour du match." +
+        "- Si un membre a un solde impayé, celui-ci est automatiquement ajouté à son prochain paiement." +
+        "- Si un joueur n'a pas payé la veille du match, sa réservation est automatiquement annulée" +
+        "et la place est libérée pour d'autres membres." +
+        "- Si l'organisateur d'un match public finit par couvrir les joueurs manquants," +
+        "les parts impayées sont ajoutées à son solde impayé.")
 public class PaiementController {
 
     private final PaiementService paiementService;
@@ -38,16 +38,16 @@ public class PaiementController {
 
     @Operation(
             summary = "Pay for a reservation",
-            description = "Processes the payment for a given reservation. " +
-                    "Only the member who owns the reservation can pay for it. " +
-                    "When payment is processed: " +
-                    "1. If the member has an outstanding balance, it is automatically added to the payment amount. " +
-                    "2. The outstanding balance is cleared on the member's account. " +
-                    "3. The payment status changes from EN_ATTENTE to PAYE. " +
-                    "4. The reservation status changes from EN_ATTENTE to CONFIRMEE. " +
-                    "5. The match player count (nbJoueursActuels) is incremented. " +
-                    "6. If nbJoueursActuels reaches 4, the match status changes to COMPLET. " +
-                    "For PUBLIC matches, payment is the validation step — first paid = first served."
+            description = "Traite le paiement d'une réservation donnée. " +
+                    "Seul le membre titulaire de la réservation peut effectuer le paiement." +
+                    "Une fois le paiement traité : " +
+                    "1. Si le membre a un solde impayé, celui-ci est automatiquement ajouté au montant du paiement." +
+                    "2. Le solde impayé est effacé du compte du membre." +
+                    "3. Le statut de paiement passe de EN_ATTENTE à PAYE." +
+                    "4. Le statut de la réservation passe de EN_ATTENTE à CONFIRMEE. +" +
+                    "5. Le nombre de joueurs participant au match (nbJoueursActuels) est incrémenté." +
+                    "6. Si nbJoueursActuels atteint 4, le statut du match passe à COMPLET." +
+                    "Pour les matchs PUBLICS, le paiement constitue l'étape de validation — premier payé = premier servi."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Payment successfully processed and reservation confirmed",
@@ -110,12 +110,12 @@ public class PaiementController {
     }
 
     @Operation(
-            summary = "Get all payments for a member",
-            description = "Returns the complete payment history of a member across all their reservations. " +
-                    "Includes payments in all statuses: EN_ATTENTE, PAYE, and REMBOURSE. " +
-                    "Useful for the member interface to display their payment history " +
-                    "and for the admin interface to track revenue per member. " +
-                    "Publicly accessible."
+            summary = "Récupérer tous les paiements d'un membre",
+            description = "Renvoie l'historique complet des paiements d'un membre pour l'ensemble de ses réservations." +
+                    "Comprend les paiements de tous les statuts : EN_ATTENTE, PAYE et REMBOURSE. " +
+                    "Utile pour l'interface membre afin d'afficher l'historique des paiements" +
+                    "et pour l'interface d'administration afin de suivre les revenus par membre." +
+                    "Accessible au public."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of payments for the member returned successfully",

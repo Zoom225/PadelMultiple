@@ -24,15 +24,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/matches")
 @RequiredArgsConstructor
-@Tag(name = "Matches", description = "Endpoints for managing padel matches. " +
-        "A match is created on a specific court for a specific date and time slot. " +
-        "Matches can be PRIVATE (organizer adds players manually, 4 players required) " +
-        "or PUBLIC (any member can join by paying). " +
-        "Business rules: " +
-        "- Each match costs 60€ split across 4 players (15€ each). " +
-        "- A private match with less than 4 players the day before automatically becomes public. " +
-        "- The organizer receives a 7-day penalty if their private match is not filled. " +
-        "- Booking delays vary by member type: GLOBAL = 3 weeks, SITE = 2 weeks, LIBRE = 5 days.")
+@Tag(name = "Matches", description = "Fonctionnalités pour la gestion des matchs de padel." +
+        "Un match est créé sur un terrain spécifique, pour une date et un créneau horaire précis." +
+        "Les matchs peuvent être PRIVÉS (l'organisateur ajoute les joueurs manuellement, 4 joueurs requis)" +
+        "ou PUBLICS (tout membre peut s'inscrire moyennant paiement)." +
+        "Règles de fonctionnement : " +
+        "- Chaque match coûte 60 €, répartis entre les 4 joueurs (15 € chacun)." +
+        "- Un match privé comptant moins de 4 joueurs la veille devient automatiquement public." +
+        "- L'organisateur se voit infliger une pénalité de 7 jours si son match privé n'est pas complet." +
+        "- Les délais de réservation varient selon le type de membre : GLOBAL = 3 semaines, SITE = 2 semaines, LIBRE = 5 jours.")
 public class MatchController {
 
     private final MatchService matchService;
@@ -40,15 +40,14 @@ public class MatchController {
 
     @Operation(
             summary = "Create a new match",
-            description = "Creates a new match on a specific court. " +
-                    "The organizer is automatically registered as the first player (nbJoueursActuels = 1). " +
-                    "Business rules enforced at creation: " +
-                    "1. The organizer must not have an active penalty. " +
-                    "2. The organizer must not have an outstanding balance. " +
-                    "3. The booking delay must be respected according to the organizer's member type. " +
-                    "4. The court must be available on the requested date. " +
-                    "5. The site must not be closed on the requested date. " +
-                    "The end time is automatically calculated from the site's match duration configuration."
+               description = "Crée un nouveau match sur un terrain spécifique." + "L'organisateur est automatiquement enregistré comme premier joueur (nbJoueursActuels = 1)." +
+                    "Règles de gestion appliquées lors de la création :" +
+                    "1. L'organisateur ne doit pas avoir de sanction en cours." +
+                    "2. L'organisateur ne doit pas avoir de solde impayé." +
+                    "3. Le délai de réservation doit être respecté en fonction du type d'adhésion de l'organisateur." +
+                    "4. Le terrain doit être disponible à la date demandée." +
+                    "5. Le site ne doit pas être fermé à la date demandée." +
+                    "L'heure de fin est automatiquement calculée à partir de la configuration de la durée des matchs du site."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Match successfully created",
@@ -84,11 +83,11 @@ public class MatchController {
     }
 
     @Operation(
-            summary = "Get a match by ID",
-            description = "Returns a single match by its ID. " +
-                    "Includes full details: court, site, organizer, date, time slot, type, status, " +
-                    "current number of players, price per player, and public conversion date if applicable. " +
-                    "Publicly accessible."
+            summary = "Rechercher un élément par ID",
+            description = "Renvoie un seul résultat correspondant à son identifiant.  +\n" +
+                    "Comprend toutes les informations : terrain, site, organisateur, date, créneau horaire, type, statut, +\n" +
+                    "nombre actuel de joueurs, prix par joueur et date de conversion publique, le cas échéant.  +\n" +
+                    "Accessible au public. "
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Match found and returned",
@@ -104,12 +103,12 @@ public class MatchController {
     }
 
     @Operation(
-            summary = "Get all available public matches",
-            description = "Returns all public matches with status PLANIFIE that still have open spots. " +
-                    "This is the main endpoint used by the member interface to display joinable matches. " +
-                    "A match appears here either because it was created as public, " +
-                    "or because it was a private match that was automatically converted to public " +
-                    "the day before due to insufficient players. Publicly accessible."
+            summary = "Afficher tous les matchs publics disponibles",
+            description = "Renvoie toutes les rencontres publiques ayant le statut PLANIFIÉ et pour lesquelles il reste des places disponibles." +
+                    "Il s'agit du point de terminaison principal utilisé par l'interface des membres pour afficher les rencontres auxquelles il est possible de s'inscrire. +\n" +
+                    "Une rencontre apparaît ici soit parce qu'elle a été créée en tant que rencontre publique," +
+                    "soit parce qu'il s'agissait d'une rencontre privée qui a été automatiquement convertie en rencontre publique" +
+                    "la veille en raison d'un nombre insuffisant de joueurs. Accessible au public."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of available public matches returned successfully",
@@ -125,10 +124,10 @@ public class MatchController {
     }
 
     @Operation(
-            summary = "Get all matches by site",
-            description = "Returns all matches hosted on courts belonging to a specific site, " +
-                    "regardless of match type or status. " +
-                    "Used by the admin interface to monitor activity per site. Publicly accessible."
+            summary = "Afficher tous les résultats par site",
+            description = "Renvoie tous les matchs disputés sur les terrains d'un site donné," +
+                    "quel que soit leur type ou leur statut."+
+                    "Utilisé par l'interface d'administration pour suivre l'activité par site. Accessible au public."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of matches for the given site returned successfully",
@@ -148,10 +147,10 @@ public class MatchController {
     }
 
     @Operation(
-            summary = "Get all matches organized by a member",
-            description = "Returns all matches where the given member is the organizer. " +
-                    "Useful for displaying a member's match history and upcoming organized matches " +
-                    "in the member interface. Publicly accessible."
+            summary = "Afficher tous les matchs organisés par un membre",
+            description = "Renvoie tous les matchs dont le membre indiqué est l'organisateur." +
+                    "Utile pour afficher l'historique des matchs d'un membre et les prochains matchs qu'il organise" +
+                    "dans l'interface membre. Accessible au public."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of matches organized by the member returned successfully",
@@ -171,13 +170,13 @@ public class MatchController {
     }
 
     @Operation(
-            summary = "Manually convert a private match to public",
-            description = "Forces a private match to become public before the automatic scheduler runs. " +
-                    "This can be triggered manually by an admin. " +
-                    "When converted: the match becomes visible to all members, " +
-                    "the organizer automatically receives a 7-day booking penalty, " +
-                    "and the conversion timestamp is recorded. " +
-                    "The match must currently be of type PRIVE to be converted. Requires ADMIN role.",
+            summary = "Convertir manuellement un match privé en match public",
+            description = "Force un match privé à devenir public avant l'exécution du planificateur automatique." +
+                    "Cette opération peut être déclenchée manuellement par un administrateur." +
+                    "Une fois converti : le match devient visible pour tous les membres," +
+                    "l'organisateur se voit automatiquement infliger une pénalité de réservation de 7 jours," +
+                    "et l'horodatage de la conversion est enregistré." +
+                    "Le match doit actuellement être de type PRIVE pour pouvoir être converti. Nécessite le rôle ADMIN.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
