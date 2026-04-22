@@ -26,11 +26,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/membres")
 @RequiredArgsConstructor
-@Tag(name = "Membres", description = "Endpoints for managing padel members. " +
-        "There are 3 types of members: GLOBAL (matricule starting with G, books 3 weeks in advance, all sites), " +
-        "SITE (matricule starting with S, books 2 weeks in advance, their site only), " +
-        "LIBRE (matricule starting with L, books 5 days in advance, all sites). " +
-        "Authentication is done via matricule only — no password required for members.")
+@Tag(name = "Membres", description = "Interfaces de gestion des membres de padel. " +
+        "Il existe 3 types d'adhérents : GLOBAL (matricule commençant par G, réservation 3 semaines à l'avance, tous les sites), \" +\n" +
+        "SITE (matricule commençant par S, réservation 2 semaines à l'avance, leur site uniquement)," +
+        "LIBRE (matricule commençant par L, réservation 5 jours à l'avance, tous les sites)." +
+        "L'authentification se fait uniquement via le matricule — aucun mot de passe n'est requis pour les membres.")
 public class MembreController {
 
     private final MembreService membreService;
@@ -38,13 +38,13 @@ public class MembreController {
     private final MembreMapper membreMapper;
 
     @Operation(
-            summary = "Register a new member",
-            description = "Creates a new member with a unique matricule. " +
-                    "The matricule format is validated according to member type: " +
-                    "GLOBAL → G followed by 4 digits (e.g. G1234), " +
-                    "SITE → S followed by 5 digits (e.g. S12345), " +
-                    "LIBRE → L followed by 5 digits (e.g. L12345). " +
-                    "A SITE member must provide a siteId. GLOBAL and LIBRE members do not need one."
+            summary = "Inscrire un nouveau membre",
+            description = "Crée un nouveau membre avec un matricule unique." +
+                    "Le format du matricule est validé en fonction du type de membre :" +
+                    " GLOBAL → G suivi de 4 chiffres (par ex. G1234)," +
+                    " SITE → S suivi de 5 chiffres (par ex. S12345)," +
+                    "LIBRE → L suivi de 5 chiffres (par ex. L12345)." +
+                    "Un membre SITE doit fournir un siteId. Les membres GLOBAL et LIBRE n'en ont pas besoin."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Member successfully registered",
@@ -85,9 +85,9 @@ public class MembreController {
     }
 
     @Operation(
-            summary = "Get a member by ID",
-            description = "Returns a single member by their internal ID. " +
-                    "Includes member type, site information, and current outstanding balance. Publicly accessible."
+            summary = "Rechercher un membre par identifiant",
+            description = "Renvoie un membre donné en fonction de son identifiant interne." +
+                    "Comprend le type de membre, les informations relatives au site et le solde impayé actuel. Accessible au public."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Member found and returned",
@@ -103,9 +103,9 @@ public class MembreController {
     }
 
     @Operation(
-            summary = "Get a member by matricule",
-            description = "Returns a member by their unique matricule. " +
-                    "This is the primary way to identify a member since authentication is done via matricule only. Publicly accessible."
+            summary = "Rechercher un membre par matricule",
+            description = "Récupère un membre à l'aide de son matricule unique." +
+                    "Il s'agit du principal moyen d'identifier un membre, car l'authentification s'effectue uniquement via le matricule. Accessible au public via le matricule."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Member found and returned",
@@ -121,10 +121,10 @@ public class MembreController {
     }
 
     @Operation(
-            summary = "Check if a member has an active penalty",
-            description = "Returns true if the member currently has an active penalty. " +
-                    "A penalty is applied when a member organizes a private match that is not filled 24 hours before the match date. " +
-                    "During the penalty period (7 days), the member cannot create or join any match. Publicly accessible."
+            summary = "Vérifier si un membre fait l'objet d'une sanction en cours",
+            description = "Renvoie « vrai » si le membre fait actuellement l'objet d'une sanction." +
+                    "Une sanction est appliquée lorsqu'un membre organise un match privé qui n'est pas complet 24 heures avant la date du match. +\n" +
+                    "Pendant la durée de la sanction (7 jours), le membre ne peut ni créer ni rejoindre de match. Accessible au public. "
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Penalty status returned",
@@ -140,12 +140,12 @@ public class MembreController {
     }
 
     @Operation(
-            summary = "Check if a member has an outstanding balance",
-            description = "Returns true if the member has an unpaid balance. " +
-                    "An outstanding balance is added when a member organizes a public match that is not filled — " +
-                    "the organizer must cover the missing players' share. " +
-                    "A member with an outstanding balance cannot create a new match until the balance is cleared. " +
-                    "The balance is automatically deducted at the next payment. Publicly accessible."
+            summary = "Vérifier si un membre a un solde impayé",
+            description = "Renvoie « true » si le membre a un solde impayé." +
+                    "Un solde impayé est généré lorsqu'un membre organise une partie publique qui n'est pas complète — " +
+                    "l'organisateur doit alors prendre en charge la part des joueurs manquants." +
+                    "Un membre ayant un solde impayé ne peut pas créer de nouvelle partie tant que ce solde n'est pas réglé." +
+                    "Le solde est automatiquement déduit lors du prochain paiement. Accessible au public."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Balance status returned",
@@ -161,9 +161,9 @@ public class MembreController {
     }
 
     @Operation(
-            summary = "Update a member",
-            description = "Updates the personal information of an existing member (name, first name, email). " +
-                    "The matricule and member type cannot be changed after registration. Requires ADMIN role.",
+            summary = "Mettre à jour un membre",
+            description = "Met à jour les informations personnelles d'un membre existant (nom, prénom, adresse e-mail)." +
+                    "Le matricule et le type de membre ne peuvent pas être modifiés après l'inscription. Nécessite le rôle ADMIN. ",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
@@ -188,8 +188,8 @@ public class MembreController {
 
     @Operation(
             summary = "Delete a member",
-            description = "Permanently deletes a member and all their associated reservations and penalties. " +
-                    "This action is irreversible. Requires ADMIN role.",
+            description = "Supprime définitivement un membre ainsi que toutes ses réservations et pénalités associées.  +\n" +
+                    " Cette action est irréversible. Nécessite le rôle ADMIN.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
