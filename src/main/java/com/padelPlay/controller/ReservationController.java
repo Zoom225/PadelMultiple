@@ -24,41 +24,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
-@Tag(name = "Reservations", description = "Endpoints de gestion des réservations de matchs. " +
-        "Une réservation lie un membre à un match et génère automatiquement un paiement en attente. " +
-        "Cycle de vie d'une réservation : " +
-        "EN_ATTENTE (créée, paiement en attente) → CONFIRMEE (paiement effectué) → ANNULEE (annulée). " +
-        "Règles métier : " +
-        "- Un membre ne peut pas réserver une place dans le même match deux fois. " +
-        "- Un membre avec une pénalité active ne peut pas effectuer de réservation. " +
-        "- Un membre ayant un solde impayé ne peut pas effectuer de réservation. " +
-        "- Pour les matchs PRIVATE, seul l'organisateur peut ajouter des joueurs. " +
-        "- Pour les matchs PUBLIC, tout membre éligible peut rejoindre en payant (premier arrivé, premier servi). " +
-        "- Un membre SITE ne peut réserver que sur son propre site.")
+@Tag(name = "Reservations", description = "Endpoints for managing match reservations. " +
+        "A reservation links a member to a match and automatically generates a pending payment. " +
+        "Reservation lifecycle: " +
+        "EN_ATTENTE (created, payment pending) → CONFIRMEE (payment done) → ANNULEE (cancelled). " +
+        "Business rules: " +
+        "- A member cannot reserve a spot in the same match twice. " +
+        "- A member with an active penalty cannot make a reservation. " +
+        "- A member with an outstanding balance cannot make a reservation. " +
+        "- For PRIVATE matches, only the organizer can add players. " +
+        "- For PUBLIC matches, any eligible member can join by paying (first come, first served). " +
+        "- A SITE member can only reserve on their own site.")
 public class ReservationController {
 
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
 
     @Operation(
-            summary = "Créer une nouvelle réservation",
-            description = "Crée une réservation pour un membre sur un match spécifique. " +
-                    "Un paiement en attente (EN_ATTENTE) est automatiquement créé en même temps que la réservation. " +
-                    "La réservation n'est pas confirmée tant que le paiement n'est pas effectué via POST /api/paiements. " +
-                    "Règles métier appliquées : " +
-                    "1. Le match ne doit pas être complet (nbJoueursActuels < 4) et ne doit pas être annulé. " +
-                    "2. Le membre ne doit pas déjà être inscrit à ce match. " +
-                    "3. Le membre ne doit pas avoir de pénalité active. " +
-                    "4. Le membre ne doit pas avoir de solde impayé. " +
-                    "5. Pour les matchs PRIVATE, seul l'organisateur peut ajouter des joueurs. " +
-                    "6. Un membre SITE ne peut réserver que sur son propre site."
+            summary = "Create a new reservation",
+            description = "Creates a reservation for a member on a specific match. " +
+                    "A pending payment (EN_ATTENTE) is automatically created alongside the reservation. " +
+                    "The reservation is not confirmed until the payment is completed via POST /api/paiements. " +
+                    "Business rules enforced: " +
+                    "1. The match must not be full (nbJoueursActuels < 4) and must not be cancelled. " +
+                    "2. The member must not already be registered in this match. " +
+                    "3. The member must not have an active penalty. " +
+                    "4. The member must not have an outstanding balance. " +
+                    "5. For PRIVATE matches, only the organizer can add players. " +
+                    "6. A SITE member can only book on their own site."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Réservation créée avec succès avec un paiement en attente",
+            @ApiResponse(responseCode = "201", description = "Reservation successfully created with a pending payment",
                     content = @Content(schema = @Schema(implementation = ReservationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Violation d'une règle métier — match complet, déjà inscrit, pénalité, solde impayé, mauvais site ou restriction de match privé",
+            @ApiResponse(responseCode = "400", description = "Business rule violation — match full, already registered, penalty, balance, wrong site, or private match restriction",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Match ou membre introuvable",
+            @ApiResponse(responseCode = "404", description = "Match or member not found",
                     content = @Content)
     })
     @PostMapping
@@ -73,20 +73,20 @@ public class ReservationController {
     }
 
     @Operation(
-            summary = "Obtenir une réservation par ID",
-            description = "Retourne une réservation unique par son ID. " +
-                    "Inclut les détails du match associé, les informations du membre, le statut de la réservation " +
-                    "et le paiement lié avec son statut actuel. Accessible publiquement."
+            summary = "Get a reservation by ID",
+            description = "Returns a single reservation by its ID. " +
+                    "Includes the associated match details, member information, reservation status, " +
+                    "and the linked payment with its current status. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Réservation trouvée et retournée",
+            @ApiResponse(responseCode = "200", description = "Reservation found and returned",
                     content = @Content(schema = @Schema(implementation = ReservationResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Réservation introuvable",
+            @ApiResponse(responseCode = "404", description = "Reservation not found",
                     content = @Content)
     })
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getById(
-            @Parameter(description = "ID de la réservation à récupérer", required = true)
+            @Parameter(description = "ID of the reservation to retrieve", required = true)
             @PathVariable Long id) {
         return ResponseEntity.ok(
                 reservationMapper.toResponse(reservationService.getById(id))
@@ -94,20 +94,20 @@ public class ReservationController {
     }
 
     @Operation(
-            summary = "Obtenir toutes les réservations d'un match",
-            description = "Retourne toutes les réservations liées à un match spécifique. " +
-                    "Utile pour l'interface admin afin de voir qui a rejoint un match " +
-                    "et le statut de paiement de chaque joueur. Accessible publiquement."
+            summary = "Get all reservations for a match",
+            description = "Returns all reservations linked to a specific match. " +
+                    "Useful for the admin interface to see who has joined a match " +
+                    "and the payment status of each player. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Liste des réservations du match retournée avec succès",
+            @ApiResponse(responseCode = "200", description = "List of reservations for the match returned successfully",
                     content = @Content(schema = @Schema(implementation = ReservationResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Match introuvable",
+            @ApiResponse(responseCode = "404", description = "Match not found",
                     content = @Content)
     })
     @GetMapping("/match/{matchId}")
     public ResponseEntity<List<ReservationResponse>> getByMatchId(
-            @Parameter(description = "ID du match pour lequel récupérer les réservations", required = true)
+            @Parameter(description = "ID of the match to retrieve reservations for", required = true)
             @PathVariable Long matchId) {
         List<ReservationResponse> reservations = reservationService.getByMatchId(matchId)
                 .stream()
@@ -117,20 +117,20 @@ public class ReservationController {
     }
 
     @Operation(
-            summary = "Obtenir toutes les réservations d'un membre",
-            description = "Retourne toutes les réservations effectuées par un membre spécifique sur l'ensemble des matchs. " +
-                    "Inclut les matchs passés et à venir avec leur statut de paiement. " +
-                    "Utilisé par l'interface membre pour afficher son historique de réservations. Accessible publiquement."
+            summary = "Get all reservations for a member",
+            description = "Returns all reservations made by a specific member across all matches. " +
+                    "Includes past and upcoming matches with their payment status. " +
+                    "Used by the member interface to display their reservation history. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Liste des réservations du membre retournée avec succès",
+            @ApiResponse(responseCode = "200", description = "List of reservations for the member returned successfully",
                     content = @Content(schema = @Schema(implementation = ReservationResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Membre introuvable",
+            @ApiResponse(responseCode = "404", description = "Member not found",
                     content = @Content)
     })
     @GetMapping("/membre/{membreId}")
     public ResponseEntity<List<ReservationResponse>> getByMembreId(
-            @Parameter(description = "ID du membre pour lequel récupérer les réservations", required = true)
+            @Parameter(description = "ID of the member to retrieve reservations for", required = true)
             @PathVariable Long membreId) {
         List<ReservationResponse> reservations = reservationService.getByMembreId(membreId)
                 .stream()
@@ -140,26 +140,26 @@ public class ReservationController {
     }
 
     @Operation(
-            summary = "Annuler une réservation",
-            description = "Annule une réservation existante et libère la place dans le match. " +
-                    "Si le paiement était déjà effectué (PAYE), il est automatiquement marqué comme REMBOURSE. " +
-                    "Le nombre de joueurs du match (nbJoueursActuels) est décrémenté automatiquement. " +
-                    "Si le match était COMPLET, il repasse au statut PLANIFIE après annulation, " +
-                    "ce qui le rend de nouveau rejoignable par d'autres membres.",
+            summary = "Cancel a reservation",
+            description = "Cancels an existing reservation and frees up the spot in the match. " +
+                    "If the payment was already completed (PAYE), it is automatically marked as REMBOURSE. " +
+                    "The match player count (nbJoueursActuels) is decremented automatically. " +
+                    "If the match was COMPLET, it returns to PLANIFIE status after cancellation, " +
+                    "making it joinable again by other members.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Réservation annulée avec succès"),
-            @ApiResponse(responseCode = "400", description = "La réservation est déjà annulée",
+            @ApiResponse(responseCode = "204", description = "Reservation successfully cancelled"),
+            @ApiResponse(responseCode = "400", description = "Reservation is already cancelled",
                     content = @Content),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Réservation introuvable",
+            @ApiResponse(responseCode = "404", description = "Reservation not found",
                     content = @Content)
     })
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(
-            @Parameter(description = "ID de la réservation à annuler", required = true)
+            @Parameter(description = "ID of the reservation to cancel", required = true)
             @PathVariable Long id) {
         reservationService.cancel(id);
         return ResponseEntity.noContent().build();
