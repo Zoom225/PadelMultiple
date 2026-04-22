@@ -24,25 +24,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/terrains")
 @RequiredArgsConstructor
-@Tag(name = "Terrains", description = "Endpoints de gestion des terrains de padel. Chaque terrain appartient à un site et peut accueillir des matchs. Un site peut avoir plusieurs terrains avec des disponibilités différentes.")
+@Tag(name = "Courts", description = "Endpoints for managing padel courts. Each court belongs to a site and can host matches. A site can have multiple courts with different availabilities.")
 public class TerrainController {
 
     private final TerrainService terrainService;
     private final TerrainMapper terrainMapper;
 
     @Operation(
-            summary = "Créer un nouveau terrain",
-            description = "Crée un nouveau terrain de padel et le lie à un site existant. Le site doit exister avant la création du terrain. Nécessite le rôle ADMIN.",
+            summary = "Create a new court",
+            description = "Creates a new padel court and links it to an existing site. The site must exist before creating a court. Requires ADMIN role.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Terrain créé avec succès",
+            @ApiResponse(responseCode = "201", description = "Court successfully created",
                     content = @Content(schema = @Schema(implementation = TerrainResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Corps de requête invalide ou erreur de validation",
+            @ApiResponse(responseCode = "400", description = "Invalid request body or validation error",
                     content = @Content),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Site introuvable",
+            @ApiResponse(responseCode = "404", description = "Site not found",
                     content = @Content)
     })
     @PostMapping
@@ -53,11 +53,11 @@ public class TerrainController {
     }
 
     @Operation(
-            summary = "Obtenir tous les terrains",
-            description = "Retourne la liste de tous les terrains de padel sur l'ensemble des sites. Accessible publiquement."
+            summary = "Get all courts",
+            description = "Returns the list of all padel courts across all sites. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Liste des terrains retournée avec succès",
+            @ApiResponse(responseCode = "200", description = "List of courts returned successfully",
                     content = @Content(schema = @Schema(implementation = TerrainResponse.class)))
     })
     @GetMapping
@@ -70,35 +70,35 @@ public class TerrainController {
     }
 
     @Operation(
-            summary = "Obtenir un terrain par ID",
-            description = "Retourne un terrain unique par son ID, y compris le site auquel il appartient. Accessible publiquement."
+            summary = "Get a court by ID",
+            description = "Returns a single court by its ID including the site it belongs to. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Terrain trouvé et retourné",
+            @ApiResponse(responseCode = "200", description = "Court found and returned",
                     content = @Content(schema = @Schema(implementation = TerrainResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Terrain introuvable",
+            @ApiResponse(responseCode = "404", description = "Court not found",
                     content = @Content)
     })
     @GetMapping("/{id}")
     public ResponseEntity<TerrainResponse> getById(
-            @Parameter(description = "ID du terrain à récupérer", required = true)
+            @Parameter(description = "ID of the court to retrieve", required = true)
             @PathVariable Long id) {
         return ResponseEntity.ok(terrainMapper.toResponse(terrainService.getById(id)));
     }
 
     @Operation(
-            summary = "Obtenir tous les terrains d'un site",
-            description = "Retourne tous les terrains appartenant à un site spécifique. Utile pour afficher les terrains disponibles lorsqu'un membre souhaite réserver un match sur un site donné. Accessible publiquement."
+            summary = "Get all courts by site",
+            description = "Returns all courts belonging to a specific site. Useful for displaying available courts when a member wants to book a match on a given site. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Liste des terrains du site retournée avec succès",
+            @ApiResponse(responseCode = "200", description = "List of courts for the given site returned successfully",
                     content = @Content(schema = @Schema(implementation = TerrainResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Site introuvable",
+            @ApiResponse(responseCode = "404", description = "Site not found",
                     content = @Content)
     })
     @GetMapping("/site/{siteId}")
     public ResponseEntity<List<TerrainResponse>> getBySiteId(
-            @Parameter(description = "ID du site pour lequel récupérer les terrains", required = true)
+            @Parameter(description = "ID of the site to retrieve courts for", required = true)
             @PathVariable Long siteId) {
         List<TerrainResponse> terrains = terrainService.getBySiteId(siteId)
                 .stream()
@@ -108,23 +108,23 @@ public class TerrainController {
     }
 
     @Operation(
-            summary = "Mettre à jour un terrain",
-            description = "Met à jour le nom d'un terrain existant. Le site ne peut pas être modifié après la création. Nécessite le rôle ADMIN.",
+            summary = "Update a court",
+            description = "Updates the name of an existing court. The site cannot be changed after creation. Requires ADMIN role.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Terrain mis à jour avec succès",
+            @ApiResponse(responseCode = "200", description = "Court successfully updated",
                     content = @Content(schema = @Schema(implementation = TerrainResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Corps de requête invalide ou erreur de validation",
+            @ApiResponse(responseCode = "400", description = "Invalid request body or validation error",
                     content = @Content),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Terrain introuvable",
+            @ApiResponse(responseCode = "404", description = "Court not found",
                     content = @Content)
     })
     @PutMapping("/{id}")
     public ResponseEntity<TerrainResponse> update(
-            @Parameter(description = "ID du terrain à mettre à jour", required = true)
+            @Parameter(description = "ID of the court to update", required = true)
             @PathVariable Long id,
             @Valid @RequestBody TerrainRequest request) {
         Terrain terrain = terrainMapper.toEntity(request);
@@ -133,20 +133,20 @@ public class TerrainController {
     }
 
     @Operation(
-            summary = "Supprimer un terrain",
-            description = "Supprime définitivement un terrain et tous ses matchs associés. Cette action est irréversible. Nécessite le rôle ADMIN.",
+            summary = "Delete a court",
+            description = "Permanently deletes a court and all its associated matches. This action is irreversible. Requires ADMIN role.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Terrain supprimé avec succès"),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "204", description = "Court successfully deleted"),
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Terrain introuvable",
+            @ApiResponse(responseCode = "404", description = "Court not found",
                     content = @Content)
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @Parameter(description = "ID du terrain à supprimer", required = true)
+            @Parameter(description = "ID of the court to delete", required = true)
             @PathVariable Long id) {
         terrainService.delete(id);
         return ResponseEntity.noContent().build();

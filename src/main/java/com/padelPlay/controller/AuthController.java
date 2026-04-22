@@ -20,33 +20,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = " Points de terminaison pour l'authentification des administrateurs. " +
-        "Les membres ne s'authentifient PAS ici — ils sont identifiés uniquement par leur matricule " +
-        "et n'ont pas besoin de jeton pour accéder aux points de terminaison destinés aux membres." +
-        "Cette authentification est réservée exclusivement aux administrateurs (GLOBAL ou SITE)" +
-        "qui doivent accéder aux points de terminaison de gestion protégés." +
-        "Processus d'authentification :" +
-        "1. L'administrateur envoie son adresse e-mail et son mot de passe via POST /api/auth/login." +
-        "2. Le serveur valide les identifiants et renvoie un jeton JWT valable pendant 24 heures."+
-        "3. L'administrateur inclut le jeton dans toutes les requêtes suivantes via l'en-tête Authorization :" +
-        "Authorization: Bearer <token>" +
-        "4. Le jeton encode l'adresse e-mail et le rôle de l'administrateur (GLOBAL ou SITE)." +
-        "Remarque de sécurité : le même message d'erreur est renvoyé que l'adresse e-mail n'existe pas" +
-        "ou que le mot de passe soit incorrect — cela empêche les attaques par énumération d'utilisateurs.")
+@Tag(name = "Authentication", description = "Endpoints for administrator authentication. " +
+        "Members do NOT authenticate here — they are identified only by their matricule " +
+        "and do not need a token to access member-facing endpoints. " +
+        "This authentication flow is reserved exclusively for administrators (GLOBAL or SITE) " +
+        "who need access to protected management endpoints. " +
+        "Authentication process: " +
+        "1. The administrator sends their email and password via POST /api/auth/login. " +
+        "2. The server validates the credentials and returns a JWT token valid for 24 hours. " +
+        "3. The administrator includes the token in subsequent requests using the Authorization header: " +
+        "Authorization: Bearer <token>. " +
+        "4. The token encodes the administrator email and role (GLOBAL or SITE). " +
+        "Security note: the same error message is returned whether the email does not exist " +
+        "or the password is incorrect, which helps prevent user enumeration attacks.")
 public class AuthController {
 
     private final AuthService authService;
 
     @Operation(
             summary = "Administrator login",
-            description = "Authentifie un administrateur à l'aide de son adresse e-mail et de son mot de passe." +
-                    "Renvoie un jeton JWT à utiliser dans l'en-tête Authorization pour tous les points de terminaison protégés." +
-                    "Le jeton est valable pendant 24 heures. " +
-                    " La réponse comprend également les informations de profil et le rôle de l'administrateur : " +
-                    " - GLOBAL : peut consulter et gérer tous les sites." +
-                    "- SITE : peut uniquement gérer le site qui lui a été attribué." +
-                    "Important : ce point de terminaison est public et ne nécessite aucun jeton existant." +
-                    "N'utilisez PAS ce point de terminaison pour l'authentification des membres — les membres utilisent directement leur matricule."
+            description = "Authenticates an administrator using their email and password. " +
+                    "Returns a JWT token to be used in the Authorization header for all protected endpoints. " +
+                    "The token is valid for 24 hours. " +
+                    "The response also includes the administrator profile information and role: " +
+                    "- GLOBAL: can view and manage all sites. " +
+                    "- SITE: can manage only their assigned site. " +
+                    "Important: this endpoint is public and does not require any existing token. " +
+                    "Do NOT use this endpoint for member authentication — members use their matricule directly."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Login successful — JWT token returned",

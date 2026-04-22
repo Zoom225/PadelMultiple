@@ -24,23 +24,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/sites")
 @RequiredArgsConstructor
-@Tag(name = "Sites", description = "Endpoints de gestion des sites de padel. Un site contient plusieurs terrains et définit ses propres horaires d'ouverture, durée de match et jours de fermeture.")
+@Tag(name = "Sites", description = "Endpoints for managing padel sites. A site contains multiple courts and defines its own opening hours, match duration, and closing days.")
 public class SiteController {
 
     private final SiteService siteService;
     private final SiteMapper siteMapper;
 
     @Operation(
-            summary = "Créer un nouveau site",
-            description = "Crée un nouveau site de padel avec sa configuration (horaires d'ouverture, durée de match, durée de pause). Nécessite le rôle ADMIN.",
+            summary = "Create a new site",
+            description = "Creates a new padel site with its configuration (opening hours, match duration, break duration). Requires ADMIN role.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Site créé avec succès",
+            @ApiResponse(responseCode = "201", description = "Site successfully created",
                     content = @Content(schema = @Schema(implementation = SiteResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Corps de requête invalide ou erreur de validation",
+            @ApiResponse(responseCode = "400", description = "Invalid request body or validation error",
                     content = @Content),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content)
     })
     @PostMapping
@@ -51,11 +51,11 @@ public class SiteController {
     }
 
     @Operation(
-            summary = "Obtenir tous les sites",
-            description = "Retourne la liste de tous les sites de padel. Accessible publiquement."
+            summary = "Get all sites",
+            description = "Returns the list of all padel sites. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Liste des sites retournée avec succès",
+            @ApiResponse(responseCode = "200", description = "List of sites returned successfully",
                     content = @Content(schema = @Schema(implementation = SiteResponse.class)))
     })
     @GetMapping
@@ -68,40 +68,40 @@ public class SiteController {
     }
 
     @Operation(
-            summary = "Obtenir un site par ID",
-            description = "Retourne un site unique par son ID. Accessible publiquement."
+            summary = "Get a site by ID",
+            description = "Returns a single site by its ID. Publicly accessible."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Site trouvé et retourné",
+            @ApiResponse(responseCode = "200", description = "Site found and returned",
                     content = @Content(schema = @Schema(implementation = SiteResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Site introuvable",
+            @ApiResponse(responseCode = "404", description = "Site not found",
                     content = @Content)
     })
     @GetMapping("/{id}")
     public ResponseEntity<SiteResponse> getById(
-            @Parameter(description = "ID du site à récupérer", required = true)
+            @Parameter(description = "ID of the site to retrieve", required = true)
             @PathVariable Long id) {
         return ResponseEntity.ok(siteMapper.toResponse(siteService.getById(id)));
     }
 
     @Operation(
-            summary = "Mettre à jour un site",
-            description = "Met à jour tous les champs d'un site existant. Nécessite le rôle ADMIN.",
+            summary = "Update a site",
+            description = "Updates all fields of an existing site. Requires ADMIN role.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Site mis à jour avec succès",
+            @ApiResponse(responseCode = "200", description = "Site successfully updated",
                     content = @Content(schema = @Schema(implementation = SiteResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Corps de requête invalide ou erreur de validation",
+            @ApiResponse(responseCode = "400", description = "Invalid request body or validation error",
                     content = @Content),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Site introuvable",
+            @ApiResponse(responseCode = "404", description = "Site not found",
                     content = @Content)
     })
     @PutMapping("/{id}")
     public ResponseEntity<SiteResponse> update(
-            @Parameter(description = "ID du site à mettre à jour", required = true)
+            @Parameter(description = "ID of the site to update", required = true)
             @PathVariable Long id,
             @Valid @RequestBody SiteRequest request) {
         Site site = siteMapper.toEntity(request);
@@ -110,20 +110,20 @@ public class SiteController {
     }
 
     @Operation(
-            summary = "Supprimer un site",
-            description = "Supprime définitivement un site et tous ses terrains et jours de fermeture associés. Nécessite le rôle ADMIN.",
+            summary = "Delete a site",
+            description = "Permanently deletes a site and all its associated courts and closing days. Requires ADMIN role.",
             security = @SecurityRequirement(name = "Bearer Auth")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Site supprimé avec succès"),
-            @ApiResponse(responseCode = "403", description = "Accès refusé — jeton admin requis",
+            @ApiResponse(responseCode = "204", description = "Site successfully deleted"),
+            @ApiResponse(responseCode = "403", description = "Access denied — admin token required",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Site introuvable",
+            @ApiResponse(responseCode = "404", description = "Site not found",
                     content = @Content)
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @Parameter(description = "ID du site à supprimer", required = true)
+            @Parameter(description = "ID of the site to delete", required = true)
             @PathVariable Long id) {
         siteService.delete(id);
         return ResponseEntity.noContent().build();
