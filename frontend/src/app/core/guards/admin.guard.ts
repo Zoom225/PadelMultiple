@@ -1,15 +1,26 @@
-import {inject} from '@angular/core';
-import {CanActivateFn, Router} from '@angular/router';
-import {AuthService} from '../services/auth.service';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AdminSessionService } from '../auth/admin-session.service';
+import { TypeAdministrateur } from '../../shared/models/enums.model';
 
-export const adminGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
+export const adminGuard: CanActivateFn = (route) => {
   const router = inject(Router);
+  const session = inject(AdminSessionService);
 
-  if (authService.isAdminLoggedIn()) {
+  if (!session.isAuthenticated()) {
+    return router.parseUrl('/admin/login');
+  }
+
+  const allowedRoles = (route.data?.['roles'] as TypeAdministrateur[] | undefined) ?? [];
+
+  if (!allowedRoles.length) {
     return true;
   }
 
-  router.navigate(['/admin/login']);
-  return false;
+  const role = session.role();
+  if (role && allowedRoles.includes(role)) {
+    return true;
+  }
+
+  return router.parseUrl('/admin/login');
 };
