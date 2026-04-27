@@ -1,0 +1,9 @@
+/* Styles globaux pour l'application */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
