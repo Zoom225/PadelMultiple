@@ -18,5 +18,5 @@ public class MembreResponse {
     private Long siteId;
     private String siteNom;
     private Double solde;
-    // pas de passwordHash, pas de relations JPA
+    private String token;
 }

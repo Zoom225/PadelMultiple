@@ -136,11 +136,11 @@ describe('MemberReservationsPage', () => {
   });
 
   it('supprime (annule) un match PRIVE organise', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     const fixture = TestBed.createComponent(MemberReservationsPage);
     const component = fixture.componentInstance;
 
     component.onManagedMatchChange(2);
+    component.requestDeleteManagedMatch();
     component.deleteManagedMatch();
 
     expect(matchesApiMock.cancel).toHaveBeenCalledWith(2, 1);

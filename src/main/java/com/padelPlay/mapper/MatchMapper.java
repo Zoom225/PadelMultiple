@@ -1,39 +1,29 @@
 package com.padelPlay.mapper;
 
-import com.padelPlay.dto.request.MatchRequest;
-import com.padelPlay.dto.response.MatchResponse;
 import com.padelPlay.entity.Match;
-import org.springframework.stereotype.Component;
+import com.padelPlay.match.dto.MatchDto;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class MatchMapper {
 
-    public Match toEntity(MatchRequest request) {
-        return Match.builder()
-                .date(request.getDate())
-                .heureDebut(request.getHeureDebut())
-                .typeMatch(request.getTypeMatch())
-                .build();
-        // terrain et organisateur résolus dans le service
-    }
+    public MatchDto toMatchDto(Match match) {
+        if (match == null) {
+            return null;
+        }
 
-    public MatchResponse toResponse(Match match) {
-        return MatchResponse.builder()
-                .id(match.getId())
-                .terrainId(match.getTerrain().getId())
-                .terrainNom(match.getTerrain().getNom())
-                .siteNom(match.getTerrain().getSite().getNom())
-                .organisateurId(match.getOrganisateur().getId())
-                .organisateurNom(match.getOrganisateur().getNom()
-                        + " " + match.getOrganisateur().getPrenom())
-                .date(match.getDate())
-                .heureDebut(match.getHeureDebut())
-                .heureFin(match.getHeureFin())
-                .typeMatch(match.getTypeMatch())
-                .statut(match.getStatut())
-                .nbJoueursActuels(match.getNbJoueursActuels())
-                .prixParJoueur(match.getPrixParJoueur())
-                .dateConversionPublic(match.getDateConversionPublic())
-                .build();
+        return new MatchDto(
+                match.getId(),
+                match.getTerrain().getId(),
+                match.getTerrain().getNom(),
+                match.getOrganisateur().getId(),
+                match.getOrganisateur().getPrenom() + " " + match.getOrganisateur().getNom(),
+                match.getDateDebut(),
+                match.getDateFin(),
+                match.getTypeMatch(),
+                match.getStatut(),
+                match.getNbJoueursActuels(),
+                match.getPrixParJoueur()
+        );
     }
 }

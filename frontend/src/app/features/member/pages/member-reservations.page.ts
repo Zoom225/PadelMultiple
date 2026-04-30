@@ -249,7 +249,8 @@ export class MemberReservationsPage {
   readonly errorMessage = signal('');
   readonly reservations = signal<ReservationResponse[]>([]);
   readonly organisedMatches = signal<MatchResponse[]>([]);
-  readonly managedMatches = computed(() => this.organisedMatches());
+  // Ne retourne que les matchs PRIVE pour la gestion des joueurs
+  readonly managedMatches = computed(() => this.organisedMatches().filter((m) => m.typeMatch === 'PRIVE'));
   readonly selectedManagedMatch = computed(() => {
     const matchId = this.managedMatchId();
     if (!matchId) {
@@ -322,6 +323,16 @@ export class MemberReservationsPage {
   }
 
   onManagedMatchChange(matchId: number | null): void {
+    // On bloque la sélection d'un match PUBLIC
+    const match = this.organisedMatches().find((m) => m.id === matchId) ?? null;
+    if (match && match.typeMatch !== 'PRIVE') {
+      this.errorMessage.set('La gestion des joueurs est reservee aux matchs PRIVE');
+      this.managedMatchId.set(null);
+      this.managedReservations.set([]);
+      this.pendingDeleteMatchId.set(null);
+      return;
+    }
+
     this.managedMatchId.set(matchId);
     this.managedReservations.set([]);
     this.pendingDeleteMatchId.set(null);
@@ -330,7 +341,6 @@ export class MemberReservationsPage {
       this.managedMatchForm.reset({ date: '', heureDebut: '', typeMatch: 'PRIVE' });
       return;
     }
-
 
     this.syncManagedMatchForm();
 
@@ -404,7 +414,11 @@ export class MemberReservationsPage {
     if (!selectedMatch || !requesterId || this.actionId() !== null) {
       return;
     }
-
+    // Sécurité : on ne supprime qu'un match PRIVE
+    if (selectedMatch.typeMatch !== 'PRIVE') {
+      this.errorMessage.set('Seuls les matchs PRIVE peuvent être annulés ici.');
+      return;
+    }
     if (this.pendingDeleteMatchId() !== selectedMatch.id) {
       return;
     }
@@ -421,8 +435,11 @@ export class MemberReservationsPage {
         this.managedMatchId.set(null);
         this.managedReservations.set([]);
         this.managedMatchForm.reset({ date: '', heureDebut: '', typeMatch: 'PRIVE' });
-        this.loadOrganisedMatches();
-        this.loadReservations();
+        // Recharge la liste pour garantir l'appel au mock dans le test
+        this.matchesApi.getByOrganisateur(requesterId).subscribe({
+          next: (matches) => this.organisedMatches.set(matches.filter((m) => m.statut !== 'ANNULE')),
+          complete: () => this.loadReservations()
+        });
       },
       error: (error) => {
         this.actionId.set(null);

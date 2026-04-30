@@ -183,6 +183,7 @@ describe('MemberCreateMatchPage', () => {
   it('cree un match prive et ajoute les joueurs invites', () => {
     const router = TestBed.inject(Router);
     const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    vi.useFakeTimers();
     const fixture = TestBed.createComponent(MemberCreateMatchPage);
     const component = fixture.componentInstance;
 
@@ -207,7 +208,9 @@ describe('MemberCreateMatchPage', () => {
     expect(membresApiMock.getByMatricule).toHaveBeenCalledWith('L10001');
     expect(reservationsApiMock.create).toHaveBeenCalledTimes(2);
     expect(component.message()).toContain('Match prive cree');
+    vi.runAllTimers();
     expect(navigateSpy).toHaveBeenCalledWith('/member/reservations');
+    vi.useRealTimers();
   });
 
   it('traduit le message backend de delai en message frontend compréhensible', () => {

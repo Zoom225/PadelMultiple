@@ -17,6 +17,15 @@ export const extractApiErrorMessage = (error: unknown, fallback = 'Une erreur es
 
   const candidate = error as any;
 
+  // Priorité : erreurs de champ > message backend > message racine
+  if (candidate?.error?.errors && typeof candidate.error.errors === 'object' && Object.keys(candidate.error.errors).length > 0) {
+    const firstFieldMessage = Object.values(candidate.error.errors)[0];
+    if (firstFieldMessage) {
+      console.log('Found in error.error.errors:', firstFieldMessage);
+      return firstFieldMessage as string;
+    }
+  }
+
   // Vérifier error.error.message
   if (candidate?.error?.message) {
     console.log('Found in error.error.message:', candidate.error.message);
@@ -29,14 +38,6 @@ export const extractApiErrorMessage = (error: unknown, fallback = 'Une erreur es
     return candidate.message;
   }
 
-  // Vérifier error.error.errors
-  if (candidate?.error?.errors && typeof candidate.error.errors === 'object') {
-    const firstFieldMessage = Object.values(candidate.error.errors)[0];
-    if (firstFieldMessage) {
-      console.log('Found in error.error.errors:', firstFieldMessage);
-      return firstFieldMessage as string;
-    }
-  }
 
   // Vérifier error.error (texte brut)
   if (candidate?.error && typeof candidate.error === 'string') {

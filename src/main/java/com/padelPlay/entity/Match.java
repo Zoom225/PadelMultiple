@@ -1,14 +1,11 @@
 package com.padelPlay.entity;
 
-
 import com.padelPlay.entity.enums.StatutMatch;
 import com.padelPlay.entity.enums.TypeMatch;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -29,13 +26,10 @@ public class Match extends BaseEntity {
     private Membre organisateur;
 
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDateTime dateDebut;
 
     @Column(nullable = false)
-    private LocalTime heureDebut;
-
-    @Column(nullable = false)
-    private LocalTime heureFin;
+    private LocalDateTime dateFin;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,4 +52,24 @@ public class Match extends BaseEntity {
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
+
+    public java.time.LocalDate getDate() {
+        return dateDebut != null ? dateDebut.toLocalDate() : null;
+    }
+
+    public java.time.LocalTime getHeureDebut() {
+        return dateDebut != null ? dateDebut.toLocalTime() : null;
+    }
+
+    public java.time.LocalTime getHeureFin() {
+        return dateFin != null ? dateFin.toLocalTime() : null;
+    }
+
+    public void setHeureFin(java.time.LocalTime heureFin) {
+        if (dateFin != null && heureFin != null) {
+            this.dateFin = java.time.LocalDateTime.of(dateFin.toLocalDate(), heureFin);
+        } else if (dateDebut != null && heureFin != null) {
+            this.dateFin = java.time.LocalDateTime.of(dateDebut.toLocalDate(), heureFin);
+        }
+    }
 }

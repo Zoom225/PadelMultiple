@@ -39,6 +39,10 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
+                        // sites et terrains → lecture publique (pour le formulaire de création de match)
+                        .requestMatchers(HttpMethod.GET, "/api/sites/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/terrains/**").permitAll()
+
                         // membres → lecture publique (le frontend membre en a besoin)
                         .requestMatchers(HttpMethod.GET, "/api/membres/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/membres").permitAll()
@@ -48,10 +52,13 @@ public class SecurityConfig {
 
                         // réservations → lecture publique
                         .requestMatchers(HttpMethod.GET, "/api/reservations/**").permitAll()
+                        
+                        // Création de match par les membres
+                        .requestMatchers(HttpMethod.POST, "/api/matches").authenticated()
 
                         // réservations → création et annulation accessibles aux membres
-                        .requestMatchers(HttpMethod.POST, "/api/reservations").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/reservations/*/cancel").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/reservations").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/reservations/*/cancel").authenticated()
 
                         // paiements → accessibles aux membres
                         .requestMatchers("/api/paiements/**").permitAll()
