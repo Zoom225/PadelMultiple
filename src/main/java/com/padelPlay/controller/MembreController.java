@@ -1,5 +1,6 @@
 package com.padelPlay.controller;
 
+import com.padelPlay.config.JwtConfig;
 import com.padelPlay.dto.request.MembreRequest;
 import com.padelPlay.dto.response.MembreResponse;
 import com.padelPlay.entity.Membre;
@@ -36,6 +37,7 @@ public class MembreController {
     private final MembreService membreService;
     private final SiteService siteService;
     private final MembreMapper membreMapper;
+    private final JwtConfig jwtConfig;
 
     @Operation(
             summary = "Register a new member",
@@ -118,7 +120,11 @@ public class MembreController {
     public ResponseEntity<MembreResponse> getByMatricule(
             @Parameter(description = "Unique matricule of the member (e.g. G1234, S12345, L12345)", required = true)
             @PathVariable String matricule) {
-        return ResponseEntity.ok(membreMapper.toResponse(membreService.getByMatricule(matricule)));
+        Membre membre = membreService.getByMatricule(matricule);
+        MembreResponse response = membreMapper.toResponse(membre);
+        String token = jwtConfig.generateToken(membre.getMatricule(), membre.getTypeMembre().name());
+        response.setToken(token);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

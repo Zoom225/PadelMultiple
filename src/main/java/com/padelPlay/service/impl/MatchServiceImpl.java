@@ -23,7 +23,48 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MatchServiceImpl implements MatchService {
+public class MatchServiceImpl implements com.padelPlay.service.MatchService {
+    private final com.padelPlay.mapper.MatchMapper matchMapper;
+    private final com.padelPlay.repository.MembreRepository membreRepository;
+    private final com.padelPlay.repository.TerrainRepository terrainRepository;
+    @org.springframework.transaction.annotation.Transactional
+    public com.padelPlay.match.dto.MatchDto createMatch(com.padelPlay.match.dto.CreateMatchRequest request, String username) {
+        Membre organisateur = membreRepository.findByMatricule(username)
+                .orElseThrow(() -> new IllegalStateException("Membre authentifié non trouvé : " + username));
+
+        Terrain terrain = terrainRepository.findById(request.terrainId())
+                .orElseThrow(() -> new com.padelPlay.exception.MatchCreationException("Terrain non trouvé avec l'ID : " + request.terrainId()));
+
+        // Règle de réservation
+        validateBookingDelay(organisateur, request.matchDate().toLocalDate());
+
+        java.time.LocalDateTime dateDebut = request.matchDate();
+        java.time.LocalDateTime dateFin = dateDebut.plusMinutes(90);
+        double prixTotal = terrain.getPrix();
+        double prixParJoueur = prixTotal / 4;
+
+        Match match = new Match();
+        match.setTerrain(terrain);
+        match.setOrganisateur(organisateur);
+        match.setDateDebut(dateDebut);
+        match.setDateFin(dateFin);
+        match.setTypeMatch(com.padelPlay.entity.enums.TypeMatch.valueOf(request.matchType()));
+        match.setStatut(com.padelPlay.entity.enums.StatutMatch.PLANIFIE);
+        match.setNbJoueursActuels(0);
+        match.setPrixTotal(prixTotal);
+        match.setPrixParJoueur(prixParJoueur);
+
+        Match savedMatch = matchRepository.save(match);
+        log.info("Match créé avec succès avec l'ID {} par l'utilisateur {}", savedMatch.getId(), username);
+
+        return matchMapper.toMatchDto(savedMatch);
+    }
+
+    public java.util.List<com.padelPlay.match.dto.MatchDto> findAllMatches() {
+        return matchRepository.findAll().stream()
+                .map(matchMapper::toMatchDto)
+                .toList();
+    }
 
     private static final int MAX_PLAYERS     = 4;
     private static final double MATCH_PRICE  = 60.0;
@@ -32,7 +73,14 @@ public class MatchServiceImpl implements MatchService {
     private final MembreService membreService;
     private final TerrainService terrainService;
 
-    @Override
+    // Implémentation de la méthode abstraite attendue par l'interface
+    public boolean isSlotAvailable(Long terrainId, LocalDate date) {
+        // On considère toute la journée pour détecter tout chevauchement
+        LocalTime debut = LocalTime.MIN;
+        LocalTime fin = LocalTime.MAX;
+        return isSlotAvailable(terrainId, date, debut, fin);
+    }
+
     @Transactional
     public Match create(Match match, Long organisateurId, Long terrainId) {
         Membre organisateur = membreService.getById(organisateurId);
@@ -49,46 +97,47 @@ public class MatchServiceImpl implements MatchService {
         }
 
         // règle : vérifier le délai de réservation selon le type de membre
-        validateBookingDelay(organisateur, match.getDate());
+        validateBookingDelay(organisateur, match.getDateDebut().toLocalDate());
+
+        // calcul des heures de fin selon la config du site
+        LocalTime heureFin = match.getDateDebut().toLocalTime()
+                .plusMinutes(terrain.getSite().getDureeMatchMinutes());
+        match.setDateFin(java.time.LocalDateTime.of(match.getDateDebut().toLocalDate(), heureFin));
 
         // règle : vérifier que le créneau est disponible sur ce terrain
-        if (!isSlotAvailable(terrainId, match.getDate())) {
+        if (!isSlotAvailable(terrainId, match.getDateDebut().toLocalDate(), match.getDateDebut().toLocalTime(), heureFin)) {
             throw new BusinessException("This slot is already booked on terrain : " + terrainId);
         }
 
         // règle : vérifier que le site n'est pas fermé ce jour là
-        validateSiteNotClosed(terrain, match.getDate());
-
-        // calcul des heures de fin selon la config du site
-        LocalTime heureFin = match.getHeureDebut()
-                .plusMinutes(terrain.getSite().getDureeMatchMinutes());
+        validateSiteNotClosed(terrain, match.getDateDebut().toLocalDate());
+        // règle : vérifier que le créneau est dans les heures d'ouverture du site
+        validateSiteOpeningHours(terrain, match.getDateDebut().toLocalTime(), heureFin);
 
         match.setOrganisateur(organisateur);
         match.setTerrain(terrain);
-        match.setHeureFin(heureFin);
         match.setNbJoueursActuels(1);
         match.setPrixTotal(MATCH_PRICE);
         match.setPrixParJoueur(MATCH_PRICE / MAX_PLAYERS);
         match.setStatut(StatutMatch.PLANIFIE);
+        // NE PAS FORCER LE TYPE, respecter la valeur passée (PUBLIC ou PRIVE)
+        // match.setTypeMatch(TypeMatch.PRIVE); // SUPPRIMÉ
 
         log.info("Match created by member {} on terrain {} at {}",
-                organisateurId, terrainId, match.getDate());
+                organisateurId, terrainId, match.getDateDebut());
 
         return matchRepository.save(match);
     }
 
-    @Override
     public Match getById(Long id) {
         return matchRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Match not found with id : " + id));
     }
 
-    @Override
     public List<Match> getAll() {
         return matchRepository.findAll();
     }
 
-    @Override
     public List<Match> getPublicAvailableMatches() {
         return matchRepository.findByTypeMatchAndStatut(
                 TypeMatch.PUBLIC,
@@ -96,17 +145,14 @@ public class MatchServiceImpl implements MatchService {
         );
     }
 
-    @Override
     public List<Match> getBySiteId(Long siteId) {
         return matchRepository.findByTerrainSiteId(siteId);
     }
 
-    @Override
     public List<Match> getByOrganisateurId(Long organisateurId) {
         return matchRepository.findByOrganisateurId(organisateurId);
     }
 
-    @Override
     @Transactional
     public void convertToPublic(Long matchId) {
         Match match = getById(matchId);
@@ -126,13 +172,14 @@ public class MatchServiceImpl implements MatchService {
                 matchId, match.getOrganisateur().getId());
     }
 
-    @Override
     @Transactional
     public void checkAndConvertExpiredPrivateMatches() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
+        java.time.LocalDateTime start = tomorrow.atStartOfDay();
+        java.time.LocalDateTime end = tomorrow.atTime(java.time.LocalTime.MAX);
 
         List<Match> expiredMatches = matchRepository
-                .findByDateAndStatut(tomorrow, StatutMatch.PLANIFIE)
+                .findByDateDebutBetweenAndStatut(start, end, StatutMatch.PLANIFIE)
                 .stream()
                 .filter(m -> m.getTypeMatch() == TypeMatch.PRIVE)
                 .filter(m -> m.getNbJoueursActuels() < MAX_PLAYERS)
@@ -143,7 +190,6 @@ public class MatchServiceImpl implements MatchService {
         log.info("Scheduler : {} private match(es) converted to public", expiredMatches.size());
     }
 
-    @Override
     @Transactional
     public void incrementPlayers(Long matchId) {
         Match match = getById(matchId);
@@ -161,7 +207,6 @@ public class MatchServiceImpl implements MatchService {
         matchRepository.save(match);
     }
 
-    @Override
     @Transactional
     public void decrementPlayers(Long matchId) {
         Match match = getById(matchId);
@@ -175,20 +220,26 @@ public class MatchServiceImpl implements MatchService {
         matchRepository.save(match);
     }
 
-    @Override
     public boolean isMatchFull(Long matchId) {
         Match match = getById(matchId);
         return match.getNbJoueursActuels() >= MAX_PLAYERS;
     }
 
-    @Override
-    public boolean isSlotAvailable(Long terrainId, LocalDate date) {
-        List<Match> existing = matchRepository.findByTerrainSiteId(terrainId)
-                .stream()
-                .filter(m -> m.getDate().equals(date))
-                .filter(m -> m.getStatut() != StatutMatch.ANNULE)
-                .toList();
-        return existing.isEmpty();
+    public boolean isSlotAvailable(Long terrainId, LocalDate date, LocalTime heureDebut, LocalTime heureFin) {
+        java.time.LocalDateTime start = date.atStartOfDay();
+        java.time.LocalDateTime end = date.atTime(java.time.LocalTime.MAX);
+        List<Match> existingMatches = matchRepository.findByTerrainIdAndDateDebutBetweenAndStatutNot(terrainId, start, end, StatutMatch.ANNULE);
+
+        for (Match existingMatch : existingMatches) {
+            LocalTime existingStart = existingMatch.getDateDebut().toLocalTime();
+            LocalTime existingEnd = existingMatch.getDateFin().toLocalTime();
+
+            // Check for overlap
+            if (heureDebut.isBefore(existingEnd) && heureFin.isAfter(existingStart)) {
+                return false; // Overlap found
+            }
+        }
+        return true; // No overlap
     }
 
     private void validateBookingDelay(Membre membre, LocalDate matchDate) {
@@ -210,17 +261,31 @@ public class MatchServiceImpl implements MatchService {
     }
 
     private void validateSiteNotClosed(Terrain terrain, LocalDate date) {
+        if (terrain.getSite().getJoursFermeture() != null) {
+            boolean isClosed = terrain.getSite().getJoursFermeture()
+                    .stream()
+                    .anyMatch(j -> j.getDate().equals(date));
 
-        if (terrain.getSite().getJoursFermeture() == null) {
-            throw new BusinessException("Site has no closed days");
+            if (isClosed) {
+                throw new BusinessException("The site is closed on : " + date);
+            }
         }
+    }
+    
+    private void validateSiteOpeningHours(Terrain terrain, LocalTime heureDebut, LocalTime heureFin) {
+        LocalTime openingTime = terrain.getSite().getHeureOuverture();
+        LocalTime closingTime = terrain.getSite().getHeureFermeture();
 
-        boolean isClosed = terrain.getSite().getJoursFermeture()
-                .stream()
-                .anyMatch(j -> j.getDate().equals(date));
-
-        if (isClosed) {
-            throw new BusinessException("The site is closed on : " + date);
+        if (heureDebut.isBefore(openingTime) || heureFin.isAfter(closingTime)) {
+            throw new BusinessException("The match is outside site opening hours");
         }
+    }
+
+    @Transactional
+    public void deleteById(Long matchId) {
+        if (!matchRepository.existsById(matchId)) {
+            throw new ResourceNotFoundException("Match not found with id : " + matchId);
+        }
+        matchRepository.deleteById(matchId);
     }
 }

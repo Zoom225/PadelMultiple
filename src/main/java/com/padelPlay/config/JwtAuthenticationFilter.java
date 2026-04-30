@@ -1,7 +1,9 @@
 package com.padelPlay.config;
 
 import com.padelPlay.entity.Administrateur;
+import com.padelPlay.entity.Membre;
 import com.padelPlay.repository.AdministrateurRepository;
+import com.padelPlay.repository.MembreRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtConfig jwtConfig;
     private final AdministrateurRepository administrateurRepository;
+    private final MembreRepository membreRepository;
 
     @Override
     protected void doFilterInternal(
@@ -47,27 +50,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String email = jwtConfig.extractEmail(token);
+        String subject = jwtConfig.extractEmail(token); // peut être un email (Admin) ou un matricule (Membre)
         String role = jwtConfig.extractRole(token);
 
-        // vérifier que l'admin existe toujours en BDD
-        Administrateur admin = administrateurRepository.findByEmail(email).orElse(null);
-        if (admin == null) {
-            filterChain.doFilter(request, response);
-            return;
+        // Vérifier si le rôle correspond à un administrateur (GLOBAL ou SITE) ou à un membre (ex: LIBRE)
+        if ("GLOBAL".equals(role) || "SITE".equals(role)) {
+            // vérifier que l'admin existe toujours en BDD
+            Administrateur admin = administrateurRepository.findByEmail(subject).orElse(null);
+            if (admin != null) {
+                authenticate(subject, role);
+                log.debug("Admin {} authenticated with role {}", subject, role);
+            }
+        } else {
+            // vérifier que le membre existe toujours en BDD par son matricule
+            Membre membre = membreRepository.findByMatricule(subject).orElse(null);
+            if (membre != null) {
+                // Pour Spring Security, on peut préfixer le rôle par ROLE_
+                authenticate(subject, role);
+                log.debug("Member {} authenticated with role {}", subject, role);
+            }
         }
 
-        // dire à Spring Security qui est authentifié
-        UsernamePasswordAuthenticationToken authentication =
+        filterChain.doFilter(request, response);
+    }
+    
+    private void authenticate(String principal, String role) {
+         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        email,
+                        principal,
                         null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + role))
                 );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.debug("Admin {} authenticated with role {}", email, role);
-
-        filterChain.doFilter(request, response);
     }
 }

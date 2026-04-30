@@ -237,7 +237,7 @@ export class MemberHomePage {
     this.membresApi.getByMatricule(matricule).subscribe({
       next: (member) => {
         this.foundMember.set(member);
-        this.memberSession.setMember(member);
+        this.memberSession.setMember(member); // Correction : un seul argument
         this.loading.set(false);
         setTimeout(() => this.router.navigateByUrl('/member/profile'), 600);
       },

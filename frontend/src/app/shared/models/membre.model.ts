@@ -19,5 +19,5 @@ export interface MembreResponse {
   siteId: number | null;
   siteNom: string | null;
   solde: number;
+  token?: string;
 }
-

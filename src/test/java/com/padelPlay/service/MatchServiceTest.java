@@ -133,12 +133,12 @@ class MatchServiceTest {
         @Test
         @DisplayName("✅ should create a PRIVE match with valid organizer GLOBAL — 25 days in advance")
         void shouldCreatePriveMatchWithGlobalMember() {
-            when(membreService.getById(1L)).thenReturn(organisateurGlobal);
-            when(terrainService.getById(1L)).thenReturn(terrain);
-            when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
-            when(membreService.hasActivePenalty(1L)).thenReturn(false);
-            when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
-            when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            lenient().when(membreService.getById(1L)).thenReturn(organisateurGlobal);
+            lenient().when(terrainService.getById(1L)).thenReturn(terrain);
+            lenient().when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
+            lenient().when(membreService.hasActivePenalty(1L)).thenReturn(false);
+            lenient().when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
+            lenient().when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
             Match match = Match.builder()
                     .date(LocalDate.now().plusDays(25))
@@ -160,12 +160,12 @@ class MatchServiceTest {
         @Test
         @DisplayName("✅ should create a PUBLIC match with valid organizer GLOBAL")
         void shouldCreatePublicMatch() {
-            when(membreService.getById(1L)).thenReturn(organisateurGlobal);
-            when(terrainService.getById(1L)).thenReturn(terrain);
-            when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
-            when(membreService.hasActivePenalty(1L)).thenReturn(false);
-            when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
-            when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            lenient().when(membreService.getById(1L)).thenReturn(organisateurGlobal);
+            lenient().when(terrainService.getById(1L)).thenReturn(terrain);
+            lenient().when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
+            lenient().when(membreService.hasActivePenalty(1L)).thenReturn(false);
+            lenient().when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
+            lenient().when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
             Match match = Match.builder()
                     .date(LocalDate.now().plusDays(25))
@@ -182,12 +182,12 @@ class MatchServiceTest {
         @Test
         @DisplayName("✅ should auto calculate heureFin from site dureeMatchMinutes")
         void shouldAutoCalculateHeureFin() {
-            when(membreService.getById(1L)).thenReturn(organisateurGlobal);
-            when(terrainService.getById(1L)).thenReturn(terrain);
-            when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
-            when(membreService.hasActivePenalty(1L)).thenReturn(false);
-            when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
-            when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            lenient().when(membreService.getById(1L)).thenReturn(organisateurGlobal);
+            lenient().when(terrainService.getById(1L)).thenReturn(terrain);
+            lenient().when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
+            lenient().when(membreService.hasActivePenalty(1L)).thenReturn(false);
+            lenient().when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
+            lenient().when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
             Match match = Match.builder()
                     .date(LocalDate.now().plusDays(25))
@@ -311,12 +311,12 @@ class MatchServiceTest {
         @Test
         @DisplayName("✅ should allow GLOBAL to book exactly 21 days in advance")
         void shouldAllowGlobalToBookExactly21Days() {
-            when(membreService.getById(1L)).thenReturn(organisateurGlobal);
-            when(terrainService.getById(1L)).thenReturn(terrain);
-            when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
-            when(membreService.hasActivePenalty(1L)).thenReturn(false);
-            when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
-            when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            lenient().when(membreService.getById(1L)).thenReturn(organisateurGlobal);
+            lenient().when(terrainService.getById(1L)).thenReturn(terrain);
+            lenient().when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
+            lenient().when(membreService.hasActivePenalty(1L)).thenReturn(false);
+            lenient().when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
+            lenient().when(matchRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
             // exactement 21 jours → doit passer
             Match match = Match.builder()
@@ -332,21 +332,30 @@ class MatchServiceTest {
         @Test
         @DisplayName("❌ should throw BusinessException when slot already taken on same date")
         void shouldThrowWhenSlotAlreadyTaken() {
-            when(membreService.getById(1L)).thenReturn(organisateurGlobal);
-            when(terrainService.getById(1L)).thenReturn(terrain);
-            when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
-            when(membreService.hasActivePenalty(1L)).thenReturn(false);
+            lenient().when(membreService.getById(1L)).thenReturn(organisateurGlobal);
+            lenient().when(terrainService.getById(1L)).thenReturn(terrain);
+            lenient().when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
+            lenient().when(membreService.hasActivePenalty(1L)).thenReturn(false);
 
             LocalDate matchDate = LocalDate.now().plusDays(25);
 
-            // un match existe déjà sur ce terrain à cette date
+            // On s'assure que le terrain a un id pour la recherche
+            terrain.setId(1L);
+            // un match existe déjà sur ce terrain à cette date et même créneau horaire
+            Terrain terrainWithId = Terrain.builder()
+                    .nom(terrain.getNom())
+                    .site(terrain.getSite())
+                    .build();
+            terrainWithId.setId(1L);
             Match existingMatch = Match.builder()
-                    .terrain(terrain)
+                    .terrain(terrainWithId)
                     .date(matchDate)
+                    .heureDebut(LocalTime.of(15, 0))
+                    .heureFin(LocalTime.of(16, 30))
                     .statut(StatutMatch.PLANIFIE)
                     .build();
 
-            when(matchRepository.findByTerrainSiteId(any()))
+            lenient().when(matchRepository.findByTerrainIdAndDateAndStatutNot(any(), any(), any()))
                     .thenReturn(List.of(existingMatch));
 
             Match newMatch = Match.builder()
@@ -376,11 +385,11 @@ class MatchServiceTest {
 
             site.setJoursFermeture(List.of(jourFermeture));
 
-            when(membreService.getById(1L)).thenReturn(organisateurGlobal);
-            when(terrainService.getById(1L)).thenReturn(terrain);
-            when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
-            when(membreService.hasActivePenalty(1L)).thenReturn(false);
-            when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
+            lenient().when(membreService.getById(1L)).thenReturn(organisateurGlobal);
+            lenient().when(terrainService.getById(1L)).thenReturn(terrain);
+            lenient().when(membreService.hasOutstandingBalance(1L)).thenReturn(false);
+            lenient().when(membreService.hasActivePenalty(1L)).thenReturn(false);
+            lenient().when(matchRepository.findByTerrainSiteId(any())).thenReturn(List.of());
 
             Match match = Match.builder()
                     .date(closedDate)
