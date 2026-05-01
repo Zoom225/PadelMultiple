@@ -1,5 +1,7 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { MembreResponse } from '../../shared/models/membre.model';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { AuthApiService } from '../api/auth-api.service';
+import { LoginRequest, MembreResponse } from '../../shared/models/membre.model';
+import { Observable, tap } from 'rxjs';
 
 export const MEMBER_SESSION_KEY = 'padel_member_session';
 
@@ -27,6 +29,19 @@ export class MemberSessionService {
   clearMember(): void {
     this.sessionState.set(null);
     localStorage.removeItem(MEMBER_SESSION_KEY);
+  }
+
+  /**
+   * Authentifie un membre et stocke le token + membre en session
+   */
+  login(matricule: string): Observable<MembreResponse> {
+    const authApi = inject(AuthApiService);
+    const payload: LoginRequest = { matricule };
+    return authApi.loginMembre(payload).pipe(
+      tap((response: MembreResponse) => {
+        this.setMember(response, response.token);
+      })
+    );
   }
 
   private loadFromStorage(): MemberSessionState | null {

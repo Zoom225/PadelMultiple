@@ -11,8 +11,8 @@ export class AuthService {
     private readonly adminSession: AdminSessionService
   ) {}
 
-  login(payload: LoginRequest): Observable<LoginResponse> {
-    return this.authApi.login(payload).pipe(
+  loginAdmin(payload: LoginRequest): Observable<LoginResponse> {
+    return this.authApi.loginAdmin(payload).pipe(
       tap((response) => this.adminSession.setSession(response))
     );
   }
@@ -21,4 +21,3 @@ export class AuthService {
     this.adminSession.clearSession();
   }
 }
-

@@ -41,6 +41,8 @@ public class TerrainServiceImpl implements TerrainService {
 
     @Override
     public List<Terrain> getBySiteId(Long siteId) {
+        // Vérifie que le site existe, sinon lève ResourceNotFoundException
+        siteService.getById(siteId);
         return terrainRepository.findBySiteId(siteId);
     }
 

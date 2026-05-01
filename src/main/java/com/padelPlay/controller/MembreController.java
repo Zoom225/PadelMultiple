@@ -143,7 +143,13 @@ public class MembreController {
     public ResponseEntity<Boolean> hasActivePenalty(
             @Parameter(description = "ID of the member to check", required = true)
             @PathVariable Long id) {
-        return ResponseEntity.ok(membreService.hasActivePenalty(id));
+        // Vérification explicite de l'existence du membre pour éviter les 500
+        try {
+            membreService.getById(id);
+            return ResponseEntity.ok(membreService.hasActivePenalty(id));
+        } catch (com.padelPlay.exception.ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @Operation(
@@ -164,7 +170,13 @@ public class MembreController {
     public ResponseEntity<Boolean> hasOutstandingBalance(
             @Parameter(description = "ID of the member to check", required = true)
             @PathVariable Long id) {
-        return ResponseEntity.ok(membreService.hasOutstandingBalance(id));
+        // Vérification explicite de l'existence du membre pour éviter les 500
+        try {
+            membreService.getById(id);
+            return ResponseEntity.ok(membreService.hasOutstandingBalance(id));
+        } catch (com.padelPlay.exception.ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @Operation(
@@ -212,5 +224,25 @@ public class MembreController {
             @PathVariable Long id) {
         membreService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Member login",
+            description = "Authenticates a member using their matricule and returns a JWT for accessing protected resources."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login successful, JWT returned",
+                    content = @Content(schema = @Schema(implementation = MembreResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Member not found with given matricule",
+                    content = @Content)
+    })
+    @PostMapping("/login")
+    public ResponseEntity<MembreResponse> login(@RequestBody MembreRequest request) {
+        // Authentification simple par matricule (pas de mot de passe)
+        Membre membre = membreService.getByMatricule(request.getMatricule());
+        MembreResponse response = membreMapper.toResponse(membre);
+        String token = jwtConfig.generateToken(membre.getMatricule(), membre.getTypeMembre().name());
+        response.setToken(token);
+        return ResponseEntity.ok(response);
     }
 }

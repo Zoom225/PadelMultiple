@@ -1,6 +1,8 @@
 package com.padelPlay.mapper;
 
 import com.padelPlay.entity.Match;
+import com.padelPlay.entity.Membre;
+import com.padelPlay.entity.Terrain;
 import com.padelPlay.match.dto.MatchDto;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +14,23 @@ public class MatchMapper {
             return null;
         }
 
+        // Gestion des relations potentiellement nulles
+        Terrain terrain = match.getTerrain();
+        Membre organisateur = match.getOrganisateur();
+
+        Long terrainId = (terrain != null) ? terrain.getId() : null;
+        String terrainNom = (terrain != null) ? terrain.getNom() : null;
+        Long organisateurId = (organisateur != null) ? organisateur.getId() : null;
+        String organisateurNom = (organisateur != null && organisateur.getPrenom() != null && organisateur.getNom() != null)
+                ? organisateur.getPrenom() + " " + organisateur.getNom()
+                : null;
+
         return new MatchDto(
                 match.getId(),
-                match.getTerrain().getId(),
-                match.getTerrain().getNom(),
-                match.getOrganisateur().getId(),
-                match.getOrganisateur().getPrenom() + " " + match.getOrganisateur().getNom(),
+                terrainId,
+                terrainNom,
+                organisateurId,
+                organisateurNom,
                 match.getDateDebut(),
                 match.getDateFin(),
                 match.getTypeMatch(),

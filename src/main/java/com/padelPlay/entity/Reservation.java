@@ -1,5 +1,7 @@
 package com.padelPlay.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.padelPlay.entity.enums.StatutReservation;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,6 +17,7 @@ public class Reservation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "match_id", nullable = false)
+    @JsonBackReference("match-reservations")
     private Match match;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,5 +29,6 @@ public class Reservation extends BaseEntity {
     private StatutReservation statut;
 
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("reservation-paiement")
     private Paiement paiement;
 }

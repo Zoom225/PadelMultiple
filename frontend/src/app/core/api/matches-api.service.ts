@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MatchRequest, MatchResponse } from '../../shared/models/match.model';
+import { CreateMatchRequest, MatchRequest, MatchResponse } from '../../shared/models/match.model';
 import { apiUrl } from './api-url';
 
 @Injectable({ providedIn: 'root' })
@@ -28,7 +28,7 @@ export class MatchesApiService {
     return this.http.get<MatchResponse[]>(apiUrl(`/matches/organisateur/${organisateurId}`));
   }
 
-  create(payload: MatchRequest): Observable<MatchResponse> {
+  create(payload: CreateMatchRequest): Observable<MatchResponse> {
     return this.http.post<MatchResponse>(apiUrl('/matches'), payload);
   }
 
@@ -44,4 +44,3 @@ export class MatchesApiService {
     return this.http.patch<void>(apiUrl(`/matches/${id}/convert-public`), {});
   }
 }
-

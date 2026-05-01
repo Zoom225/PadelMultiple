@@ -1,5 +1,6 @@
 package com.padelPlay.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +25,6 @@ public class JourFermeture extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id")
+    @JsonBackReference("site-joursFermeture")
     private Site site;
 }
