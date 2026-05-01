@@ -1,5 +1,7 @@
 package com.padelPlay.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.padelPlay.entity.enums.StatutMatch;
 import com.padelPlay.entity.enums.TypeMatch;
 import jakarta.persistence.*;
@@ -19,6 +21,7 @@ public class Match extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "terrain_id", nullable = false)
+    @JsonBackReference("terrain-matches")
     private Terrain terrain;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,25 +54,10 @@ public class Match extends BaseEntity {
     private LocalDateTime dateConversionPublic;
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("match-reservations")
     private List<Reservation> reservations;
 
-    public java.time.LocalDate getDate() {
-        return dateDebut != null ? dateDebut.toLocalDate() : null;
-    }
-
-    public java.time.LocalTime getHeureDebut() {
-        return dateDebut != null ? dateDebut.toLocalTime() : null;
-    }
-
-    public java.time.LocalTime getHeureFin() {
-        return dateFin != null ? dateFin.toLocalTime() : null;
-    }
-
-    public void setHeureFin(java.time.LocalTime heureFin) {
-        if (dateFin != null && heureFin != null) {
-            this.dateFin = java.time.LocalDateTime.of(dateFin.toLocalDate(), heureFin);
-        } else if (dateDebut != null && heureFin != null) {
-            this.dateFin = java.time.LocalDateTime.of(dateDebut.toLocalDate(), heureFin);
-        }
-    }
+    // Correction : Suppression de tous les champs et méthodes logiques redondants.
+    // L'entité est maintenant un simple POJO qui représente la table de la base de données.
+    // Toute la logique de manipulation des dates a été déplacée dans la couche service.
 }

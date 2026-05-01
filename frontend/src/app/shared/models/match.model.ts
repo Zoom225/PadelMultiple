@@ -25,3 +25,8 @@ export interface MatchResponse {
   dateConversionPublic: string | null;
 }
 
+export interface CreateMatchRequest {
+  terrainId: number;
+  matchDate: string;
+  matchType: TypeMatch;
+}

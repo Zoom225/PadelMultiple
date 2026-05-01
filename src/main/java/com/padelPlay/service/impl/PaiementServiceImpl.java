@@ -97,8 +97,9 @@ public class PaiementServiceImpl implements PaiementService {
         // récupérer toutes les réservations EN_ATTENTE pour les matchs de demain
         paiementRepository.findByStatut(StatutPaiement.EN_ATTENTE)
                 .stream()
+                // Correction : Utiliser getDateDebut().toLocalDate() au lieu de getDate()
                 .filter(p -> p.getReservation().getMatch()
-                        .getDate().equals(tomorrow))
+                        .getDateDebut().toLocalDate().equals(tomorrow))
                 .forEach(p -> {
                     Reservation reservation = p.getReservation();
                     Match match = reservation.getMatch();

@@ -18,8 +18,8 @@ public class TerrainMapper {
         return TerrainResponse.builder()
                 .id(terrain.getId())
                 .nom(terrain.getNom())
-                .siteId(terrain.getSite().getId())
-                .siteNom(terrain.getSite().getNom())
+                .siteId(terrain.getSite() != null ? terrain.getSite().getId() : null)
+                .siteNom(terrain.getSite() != null ? terrain.getSite().getNom() : null)
                 .build();
     }
 }

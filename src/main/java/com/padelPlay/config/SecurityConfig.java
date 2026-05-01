@@ -46,6 +46,7 @@ public class SecurityConfig {
                         // membres → lecture publique (le frontend membre en a besoin)
                         .requestMatchers(HttpMethod.GET, "/api/membres/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/membres").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/membres/login").permitAll()
 
                         // matches → lecture publique (voir les matchs publics)
                         .requestMatchers(HttpMethod.GET, "/api/matches/**").permitAll()
@@ -53,8 +54,8 @@ public class SecurityConfig {
                         // réservations → lecture publique
                         .requestMatchers(HttpMethod.GET, "/api/reservations/**").permitAll()
                         
-                        // Création de match par les membres
-                        .requestMatchers(HttpMethod.POST, "/api/matches").authenticated()
+                        // Création de match par les membres (authentification requise)
+                        .requestMatchers(HttpMethod.POST, "/api/matches").hasAnyRole("GLOBAL", "SITE", "LIBRE")
 
                         // réservations → création et annulation accessibles aux membres
                         .requestMatchers(HttpMethod.POST, "/api/reservations").authenticated()

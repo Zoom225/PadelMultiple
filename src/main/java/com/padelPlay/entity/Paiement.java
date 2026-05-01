@@ -1,6 +1,7 @@
 package com.padelPlay.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.padelPlay.entity.enums.StatutPaiement;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,6 +19,7 @@ public class Paiement extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
+    @JsonBackReference("reservation-paiement")
     private Reservation reservation;
 
     @Column(nullable = false)

@@ -131,12 +131,14 @@ const createMinBookingDateValidator = (getMinDate: () => string): ValidatorFn =>
               <p class="mt-2 text-slate-500">Premiere date disponible selon votre profil: {{ minBookingDate() }}</p>
             </div>
 
-            @if (!sites().length && !loading()) {
-              <p class="status-error md:col-span-2">Aucun site disponible pour creer un match.</p>
+            @if (errorMessage()) {
+              <p class="status-error md:col-span-2">{{ errorMessage() }}</p>
+            } @else if (!sites().length && !loading()) {
+              <p class="status-info md:col-span-2">Aucun site disponible pour creer un match.</p>
             }
 
             @if (form.controls.siteId.value && !terrains().length && !loading()) {
-              <p class="status-error md:col-span-2">Aucun terrain disponible pour le site selectionne.</p>
+              <p class="status-info md:col-span-2">Aucun terrain disponible pour le site selectionne.</p>
             }
 
             @if (form.controls.typeMatch.value === 'PRIVE') {
@@ -161,10 +163,6 @@ const createMinBookingDateValidator = (getMinDate: () => string): ValidatorFn =>
 
             @if (message()) {
               <p class="status-success md:col-span-2">{{ message() }}</p>
-            }
-
-            @if (errorMessage()) {
-              <p class="status-error md:col-span-2">{{ errorMessage() }}</p>
             }
 
             <div class="toolbar-actions justify-start md:col-span-2">
@@ -253,6 +251,7 @@ export class MemberCreateMatchPage {
   }
 
   loadSites(): void {
+    this.loading.set(true);
     this.errorMessage.set('');
     this.sitesApi.getAll().subscribe({
       next: (sites) => {
@@ -269,9 +268,11 @@ export class MemberCreateMatchPage {
           this.form.controls.siteId.setValue(defaultSiteId);
           this.onSiteChange(defaultSiteId);
         }
+        this.loading.set(false);
       },
       error: (error) => {
         this.errorMessage.set(extractApiErrorMessage(error, 'Impossible de charger les sites.'));
+        this.loading.set(false);
       }
     });
   }
@@ -284,15 +285,27 @@ export class MemberCreateMatchPage {
       return;
     }
 
+    this.loading.set(true);
     this.terrainsApi.getBySite(siteId).subscribe({
       next: (terrains) => {
         this.terrains.set(terrains);
         if (terrains.length) {
           this.form.controls.terrainId.setValue(terrains[0].id);
         }
+        this.loading.set(false);
       },
       error: (error) => {
-        this.errorMessage.set(extractApiErrorMessage(error, 'Impossible de charger les terrains.'));
+        // Amélioration UX : distinction 404/500/other
+        const status = error?.status;
+        if (status === 404) {
+          this.errorMessage.set('Site introuvable.');
+        } else if (status === 500) {
+          this.errorMessage.set('Erreur serveur lors du chargement des terrains.');
+        } else {
+          this.errorMessage.set(extractApiErrorMessage(error, 'Impossible de charger les terrains.'));
+        }
+        this.terrains.set([]); // On vide la liste pour désactiver le bouton
+        this.loading.set(false);
       }
     });
   }
@@ -314,32 +327,52 @@ export class MemberCreateMatchPage {
       return;
     }
 
+    // Vérification stricte de la valeur du type de match
+    if (typeMatch !== 'PUBLIC' && typeMatch !== 'PRIVE') {
+      this.errorMessage.set('Le type de match est invalide.');
+      return;
+    }
+
     this.loading.set(true);
     this.message.set('');
     this.errorMessage.set('');
 
-    // Payload conforme au backend
-    const payload = {
-      terrainId,
-      organisateurId: this.member()?.id,
-      date,
-      heureDebut,
-      typeMatch
-    };
+    // Construction du champ matchDate au format ISO attendu par le backend
+    const matchDate = `${date}T${heureDebut}:00`;
 
-    console.log('Creating match with corrected payload:', payload);
+
+    const payload: import('../../../shared/models/match.model').CreateMatchRequest = {
+      terrainId,
+      matchDate,
+      matchType: typeMatch
+    };
 
     this.matchesApi
       .create(payload)
       .subscribe({
         next: (createdMatch) => {
-          console.log('Match created successfully:', createdMatch);
           this.handleInvites(createdMatch, this.member()!);
         },
         error: (error) => {
-          console.error('Match creation failed:', error);
+          // LOGS DÉTAILLÉS POUR DEBUG
+          console.error('FULL MATCH CREATION ERROR', error);
+          console.error('error.error =', error?.error);
+          console.error('error.error.message =', error?.error?.message);
+          console.error('error.message =', error?.message);
+          // Affichage du message backend exact si présent
           this.loading.set(false);
-          this.errorMessage.set(this.toFriendlyCreationErrorMessage(error));
+          // Extraction prioritaire du message backend exact
+          let backendMessage = '';
+          if (error?.error?.message) {
+            backendMessage = error.error.message;
+          } else if (error?.message) {
+            backendMessage = error.message;
+          }
+          if (backendMessage) {
+            this.errorMessage.set('⛔ ' + backendMessage);
+          } else {
+            this.errorMessage.set(this.toFriendlyCreationErrorMessage(error));
+          }
         }
       });
   }
@@ -357,10 +390,9 @@ export class MemberCreateMatchPage {
   }
 
   private toFriendlyCreationErrorMessage(error: unknown): string {
-    console.log('=== ERROR IN MATCH CREATION ===');
+    // ...existing code...
     const apiMessage = extractApiErrorMessage(error, 'Création du match impossible.');
-
-    console.log('Extracted API message:', apiMessage);
+    const status = (error as any)?.status || (error as any)?.error?.status;
 
     // Mapping des messages connus
     const errorMappings: Record<string, string> = {
@@ -372,18 +404,22 @@ export class MemberCreateMatchPage {
       'outside site opening hours': '❌ Cet horaire est en dehors des heures d\'ouverture du site.',
     };
 
-    // Chercher un match dans le message
     for (const [key, message] of Object.entries(errorMappings)) {
       if (apiMessage.toLowerCase().includes(key)) {
-        console.log('Matched error key:', key, '→', message);
         return message;
       }
     }
 
-    // Si aucun match, afficher le message extrait
-    const friendlyMessage = `❌ Erreur : ${apiMessage}`;
-    console.log('No match found, returning:', friendlyMessage);
-    console.log('================================');
+    // Gestion spécifique pour les erreurs 500
+    if (status === 500) {
+      return '❌ Une erreur interne du serveur est survenue lors de la création du match. Veuillez réessayer plus tard ou contacter le support si le problème persiste.';
+    }
+
+    // Si aucun match, afficher le message extrait avec le code HTTP si présent
+    let friendlyMessage = `❌ Erreur : ${apiMessage}`;
+    if (status) {
+      friendlyMessage += ` (code ${status})`;
+    }
 
     return friendlyMessage;
   }

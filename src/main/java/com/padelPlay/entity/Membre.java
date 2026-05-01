@@ -4,7 +4,8 @@ import com.padelPlay.entity.enums.TypeMembre;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "membres")
@@ -37,12 +38,18 @@ public class Membre extends BaseEntity {
     @JoinColumn(name = "site_id")
     private Site site;
 
-    @OneToMany(mappedBy = "organisateur", cascade = CascadeType.ALL)
-    private List<Match> matchesOrganises;
+    // Correction : Remplacer List par Set et forcer LAZY
+    @OneToMany(mappedBy = "organisateur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Match> matchesOrganises = new HashSet<>();
 
-    @OneToMany(mappedBy = "membre", cascade = CascadeType.ALL)
-    private List<Reservation> reservations;
+    // Correction : Remplacer List par Set et forcer LAZY
+    @OneToMany(mappedBy = "membre", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Reservation> reservations = new HashSet<>();
 
-    @OneToMany(mappedBy = "membre", cascade = CascadeType.ALL)
-    private List<Penalite> penalites;
+    // Correction : Remplacer List par Set et forcer LAZY
+    @OneToMany(mappedBy = "membre", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Penalite> penalites = new HashSet<>();
 }

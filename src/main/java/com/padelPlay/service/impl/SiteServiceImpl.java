@@ -1,6 +1,5 @@
 package com.padelPlay.service.impl;
 
-
 import com.padelPlay.entity.Site;
 import com.padelPlay.exception.ResourceNotFoundException;
 import com.padelPlay.repository.SiteRepository;
@@ -29,6 +28,9 @@ public class SiteServiceImpl implements SiteService {
 
     @Override
     public List<Site> getAll() {
+        // Correction : Utiliser la méthode standard findAll().
+        // C'est maintenant la bonne approche car les collections sont en LAZY
+        // et ne seront pas chargées, évitant ainsi l'erreur 500.
         return siteRepository.findAll();
     }
 

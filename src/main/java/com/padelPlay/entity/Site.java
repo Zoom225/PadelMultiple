@@ -1,10 +1,12 @@
 package com.padelPlay.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "sites")
@@ -36,9 +38,15 @@ public class Site extends BaseEntity {
     @Column(nullable = false)
     private Integer anneeCivile;
 
-    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Terrain> terrains;
+    // Correction : Remplacer List par Set et forcer LAZY pour éviter MultipleBagFetchException
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("site-terrains")
+    @Builder.Default
+    private Set<Terrain> terrains = new HashSet<>();
 
-    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JourFermeture> joursFermeture;
+    // Correction : Remplacer List par Set et forcer LAZY pour éviter MultipleBagFetchException
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("site-joursFermeture")
+    @Builder.Default
+    private Set<JourFermeture> joursFermeture = new HashSet<>();
 }

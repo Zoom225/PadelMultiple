@@ -156,7 +156,7 @@ export class AdminLoginPage {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.authService.login(this.form.getRawValue()).subscribe({
+    this.authService.loginAdmin(this.form.getRawValue()).subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigateByUrl('/admin');
