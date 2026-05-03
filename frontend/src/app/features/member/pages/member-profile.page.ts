@@ -68,9 +68,9 @@ import { MembreResponse } from '../../../shared/models/membre.model';
 
           <!-- Bloc creation rapide de match -->
           <div class="mt-6">
-              <div class="mb-3 flex items-center gap-2">
-                <span class="text-xl">🎾</span>
-                <h3 class="m-0 text-lg font-bold text-slate-800">Creer un match rapidement</h3>
+            <div class="mb-3 flex items-center gap-2">
+              <span class="text-xl">🎾</span>
+              <h3 class="m-0 text-lg font-bold text-slate-800">Creer un match rapidement</h3>
             </div>
             <div class="grid gap-3 md:grid-cols-2">
               <a [routerLink]="['/member/matches/new']" [queryParams]="{type:'PUBLIC'}"
@@ -163,7 +163,7 @@ export class MemberProfilePage {
     }).subscribe({
       next: ({ profile, hasPenalty, hasBalance }) => {
         this.profile.set(profile);
-        this.memberSession.setMember(profile);
+        this.memberSession.setMember(profile, this.memberSession.token() ?? undefined);
         this.hasPenalty.set(hasPenalty);
         this.hasBalance.set(hasBalance);
         this.loading.set(false);
@@ -190,4 +190,3 @@ export class MemberProfilePage {
     return 'ds-badge-warning';
   }
 }
-

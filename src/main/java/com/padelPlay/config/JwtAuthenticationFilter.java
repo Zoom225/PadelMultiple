@@ -53,19 +53,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String subject = jwtConfig.extractEmail(token); // peut être un email (Admin) ou un matricule (Membre)
         String role = jwtConfig.extractRole(token);
 
-        // Vérifier si le rôle correspond à un administrateur (GLOBAL ou SITE) ou à un membre (ex: LIBRE)
-        if ("GLOBAL".equals(role) || "SITE".equals(role)) {
-            // vérifier que l'admin existe toujours en BDD
+        // Distinguer admin et membre par le format du subject
+        boolean isAdmin = subject.contains("@"); // email = admin, matricule = membre
+
+        if (isAdmin) {
             Administrateur admin = administrateurRepository.findByEmail(subject).orElse(null);
             if (admin != null) {
                 authenticate(subject, role);
                 log.debug("Admin {} authenticated with role {}", subject, role);
             }
         } else {
-            // vérifier que le membre existe toujours en BDD par son matricule
             Membre membre = membreRepository.findByMatricule(subject).orElse(null);
             if (membre != null) {
-                // Pour Spring Security, on peut préfixer le rôle par ROLE_
                 authenticate(subject, role);
                 log.debug("Member {} authenticated with role {}", subject, role);
             }
@@ -73,9 +72,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-    
+
     private void authenticate(String principal, String role) {
-         UsernamePasswordAuthenticationToken authentication =
+        UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         principal,
                         null,

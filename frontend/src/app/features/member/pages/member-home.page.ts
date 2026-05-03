@@ -23,7 +23,7 @@ import { MembreResponse } from '../../../shared/models/membre.model';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   template: `
     <!-- Hero banner padel -->
@@ -36,7 +36,6 @@ import { MembreResponse } from '../../../shared/models/membre.model';
     </div>
 
     <section class="page-shell max-w-4xl">
-
       <!-- Carte identification -->
       <div class="padel-login-card">
         <div class="padel-login-icon">🏓</div>
@@ -46,9 +45,12 @@ import { MembreResponse } from '../../../shared/models/membre.model';
         <form [formGroup]="form" class="padel-form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Matricule</mat-label>
-            <input matInput formControlName="matricule"
-                   placeholder="Ex: G1234, S12345, L12345"
-                   style="text-transform:uppercase; font-weight:600; letter-spacing:0.08em;" />
+            <input
+              matInput
+              formControlName="matricule"
+              placeholder="Ex: G1234, S12345, L12345"
+              style="text-transform:uppercase; font-weight:600; letter-spacing:0.08em;"
+            />
           </mat-form-field>
 
           <!-- Légende des types -->
@@ -77,9 +79,7 @@ import { MembreResponse } from '../../../shared/models/membre.model';
           </div>
 
           @if (errorMessage()) {
-            <div class="padel-error">
-              <span>❌</span> {{ errorMessage() }}
-            </div>
+            <div class="padel-error"><span>❌</span> {{ errorMessage() }}</div>
           }
 
           <!-- Résultat trouvé en prévisualisation -->
@@ -87,9 +87,14 @@ import { MembreResponse } from '../../../shared/models/membre.model';
             <div class="padel-found-card">
               <div class="padel-found-icon">✅</div>
               <div>
-                <div class="padel-found-name">{{ foundMember()!.prenom }} {{ foundMember()!.nom }}</div>
+                <div class="padel-found-name">
+                  {{ foundMember()!.prenom }} {{ foundMember()!.nom }}
+                </div>
                 <div class="padel-found-details">
-                  <span class="padel-badge-type" [class]="'padel-badge-' + foundMember()!.typeMembre.toLowerCase()">
+                  <span
+                    class="padel-badge-type"
+                    [class]="'padel-badge-' + foundMember()!.typeMembre.toLowerCase()"
+                  >
                     {{ foundMember()!.typeMembre }}
                   </span>
                   <span>· {{ foundMember()!.siteNom || 'Tous les sites' }}</span>
@@ -101,14 +106,16 @@ import { MembreResponse } from '../../../shared/models/membre.model';
           <div class="padel-form-actions">
             <button class="padel-btn-primary" type="submit" [disabled]="form.invalid || loading()">
               @if (loading()) {
-                <mat-spinner diameter="20" style="display:inline-block; margin-right:8px;"></mat-spinner>
+                <mat-spinner
+                  diameter="20"
+                  style="display:inline-block; margin-right:8px;"
+                ></mat-spinner>
               }
               🎾 Accéder à mon espace
             </button>
           </div>
         </form>
       </div>
-
     </section>
 
     <style>
@@ -123,80 +130,216 @@ import { MembreResponse } from '../../../shared/models/membre.model';
         content: '';
         position: absolute;
         inset: 0;
-        background-image: repeating-linear-gradient(
-          0deg, transparent, transparent 40px, rgba(255,255,255,0.04) 40px, rgba(255,255,255,0.04) 42px
-        ), repeating-linear-gradient(
-          90deg, transparent, transparent 40px, rgba(255,255,255,0.04) 40px, rgba(255,255,255,0.04) 42px
-        );
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 40px,
+            rgba(255, 255, 255, 0.04) 40px,
+            rgba(255, 255, 255, 0.04) 42px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 40px,
+            rgba(255, 255, 255, 0.04) 40px,
+            rgba(255, 255, 255, 0.04) 42px
+          );
       }
-      .padel-hero-content { position: relative; z-index: 1; }
-      .padel-ball { font-size: 4rem; margin-bottom: 0.5rem; animation: spin 8s linear infinite; }
-      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      .padel-hero-title { font-size: 2.2rem; font-weight: 800; color: #fff; margin: 0 0 0.5rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-      .padel-hero-sub { color: rgba(255,255,255,0.88); font-size: 1.05rem; margin: 0; }
+      .padel-hero-content {
+        position: relative;
+        z-index: 1;
+      }
+      .padel-ball {
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+        animation: spin 8s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .padel-hero-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 0.5rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      .padel-hero-sub {
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 1.05rem;
+        margin: 0;
+      }
 
       .padel-login-card {
         background: #fff;
         border-radius: 1.5rem;
-        box-shadow: 0 20px 60px rgba(22, 101, 52, 0.15), 0 4px 16px rgba(0,0,0,0.08);
+        box-shadow:
+          0 20px 60px rgba(22, 101, 52, 0.15),
+          0 4px 16px rgba(0, 0, 0, 0.08);
         padding: 2.5rem 2rem;
         text-align: center;
         border-top: 5px solid #16a34a;
         margin-top: -2.5rem;
       }
-      .padel-login-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-      .padel-login-title { font-size: 1.6rem; font-weight: 700; color: #14532d; margin: 0 0 0.3rem; }
-      .padel-login-sub { color: #6b7280; margin: 0 0 1.5rem; }
-      .padel-form { display: flex; flex-direction: column; gap: 1rem; text-align: left; }
+      .padel-login-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .padel-login-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #14532d;
+        margin: 0 0 0.3rem;
+      }
+      .padel-login-sub {
+        color: #6b7280;
+        margin: 0 0 1.5rem;
+      }
+      .padel-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        text-align: left;
+      }
 
-      .padel-types-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.75rem; }
+      .padel-types-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.75rem;
+      }
       .padel-type-badge {
-        display: flex; align-items: center; gap: 0.6rem;
-        padding: 0.75rem 1rem; border-radius: 0.75rem; border: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        border: 2px solid transparent;
         transition: transform 0.15s;
       }
-      .padel-type-badge:hover { transform: translateY(-2px); }
-      .padel-type-global { background: #eff6ff; border-color: #93c5fd; }
-      .padel-type-site { background: #f0fdf4; border-color: #86efac; }
-      .padel-type-libre { background: #fefce8; border-color: #fde047; }
-      .padel-type-icon { font-size: 1.5rem; }
-      .padel-type-name { font-weight: 700; font-size: 0.85rem; color: #1e293b; }
-      .padel-type-hint { font-size: 0.72rem; color: #64748b; }
+      .padel-type-badge:hover {
+        transform: translateY(-2px);
+      }
+      .padel-type-global {
+        background: #eff6ff;
+        border-color: #93c5fd;
+      }
+      .padel-type-site {
+        background: #f0fdf4;
+        border-color: #86efac;
+      }
+      .padel-type-libre {
+        background: #fefce8;
+        border-color: #fde047;
+      }
+      .padel-type-icon {
+        font-size: 1.5rem;
+      }
+      .padel-type-name {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #1e293b;
+      }
+      .padel-type-hint {
+        font-size: 0.72rem;
+        color: #64748b;
+      }
 
       .padel-error {
-        background: #fef2f2; border: 1px solid #fca5a5; border-radius: 0.75rem;
-        padding: 0.75rem 1rem; color: #991b1b; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: #991b1b;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
       .padel-found-card {
         background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-        border: 2px solid #4ade80; border-radius: 1rem;
-        padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+        border: 2px solid #4ade80;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
-      .padel-found-icon { font-size: 2rem; }
-      .padel-found-name { font-weight: 700; font-size: 1.1rem; color: #14532d; }
-      .padel-found-details { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #374151; margin-top: 0.25rem; }
+      .padel-found-icon {
+        font-size: 2rem;
+      }
+      .padel-found-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #14532d;
+      }
+      .padel-found-details {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #374151;
+        margin-top: 0.25rem;
+      }
 
       .padel-badge-type {
-        display: inline-block; padding: 0.15rem 0.6rem; border-radius: 9999px;
-        font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;
+        display: inline-block;
+        padding: 0.15rem 0.6rem;
+        border-radius: 9999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
       }
-      .padel-badge-global { background: #dbeafe; color: #1d4ed8; }
-      .padel-badge-site   { background: #dcfce7; color: #15803d; }
-      .padel-badge-libre  { background: #fef9c3; color: #a16207; }
+      .padel-badge-global {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .padel-badge-site {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .padel-badge-libre {
+        background: #fef9c3;
+        color: #a16207;
+      }
 
-      .padel-form-actions { display: flex; justify-content: center; padding-top: 0.5rem; }
+      .padel-form-actions {
+        display: flex;
+        justify-content: center;
+        padding-top: 0.5rem;
+      }
       .padel-btn-primary {
         background: linear-gradient(135deg, #15803d, #16a34a);
-        color: #fff; border: none; border-radius: 0.75rem;
-        padding: 0.85rem 2.5rem; font-size: 1rem; font-weight: 700;
-        cursor: pointer; display: flex; align-items: center; gap: 0.5rem;
+        color: #fff;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.85rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         box-shadow: 0 4px 15px rgba(21, 128, 61, 0.35);
-        transition: transform 0.15s, box-shadow 0.15s;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
       }
-      .padel-btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(21, 128, 61, 0.45); }
-      .padel-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+      .padel-btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(21, 128, 61, 0.45);
+      }
+      .padel-btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     </style>
-  `
+  `,
 })
 export class MemberHomePage {
   private readonly membresApi = inject(MembresApiService);
@@ -210,11 +353,8 @@ export class MemberHomePage {
   readonly form = new FormGroup({
     matricule: new FormControl('', {
       nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.pattern(/^(G\d{4}|S\d{5}|L\d{5})$/i)
-      ]
-    })
+      validators: [Validators.required, Validators.pattern(/^(G\d{4}|S\d{5}|L\d{5})$/i)],
+    }),
   });
 
   constructor() {
@@ -234,17 +374,19 @@ export class MemberHomePage {
 
     const matricule = this.form.controls.matricule.getRawValue().trim().toUpperCase();
 
-    this.membresApi.getByMatricule(matricule).subscribe({
+    // ← Remplacer getByMatricule par login
+    this.memberSession.login(matricule).subscribe({
       next: (member) => {
         this.foundMember.set(member);
-        this.memberSession.setMember(member); // Correction : un seul argument
         this.loading.set(false);
         setTimeout(() => this.router.navigateByUrl('/member/profile'), 600);
       },
       error: () => {
         this.loading.set(false);
-        this.errorMessage.set('Matricule introuvable. Vérifiez la valeur saisie (ex: G1001, S10001, L10001).');
-      }
+        this.errorMessage.set(
+          'Matricule introuvable. Vérifiez la valeur saisie (ex: G1001, S10001, L10001).',
+        );
+      },
     });
   }
 }
