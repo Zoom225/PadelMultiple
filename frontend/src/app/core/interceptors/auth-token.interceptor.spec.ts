@@ -4,12 +4,17 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { firstValueFrom, of } from 'rxjs';
 import { AdminSessionService } from '../auth/admin-session.service';
 import { authTokenInterceptor } from './auth-token.interceptor';
+import { AuthApiService } from '../api/auth-api.service';
 
 describe('authTokenInterceptor', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.resetTestingModule();
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AuthApiService, useValue: { loginMembre: vi.fn() } }, // ← fix
+      ],
+    });
   });
 
   it('should attach the bearer token on protected API calls', async () => {
@@ -23,7 +28,7 @@ describe('authTokenInterceptor', () => {
       siteId: null
     });
 
-    let receivedRequest: HttpRequest<unknown> | null = null;
+    let receivedRequest!: HttpRequest<unknown>;
 
     await firstValueFrom(
       TestBed.runInInjectionContext(() =>
@@ -48,11 +53,11 @@ describe('authTokenInterceptor', () => {
       siteId: null
     });
 
-    let receivedRequest: HttpRequest<unknown> | null = null;
+    let receivedRequest!: HttpRequest<unknown>;
 
     await firstValueFrom(
       TestBed.runInInjectionContext(() =>
-        authTokenInterceptor(new HttpRequest('POST', '/api/auth/login'), (req) => {
+        authTokenInterceptor(new HttpRequest('POST', '/api/auth/login', null), (req) => {
           receivedRequest = req;
           return of(new HttpResponse({ status: 200 }));
         })
@@ -62,4 +67,3 @@ describe('authTokenInterceptor', () => {
     expect(receivedRequest?.headers.has('Authorization')).toBe(false);
   });
 });
-

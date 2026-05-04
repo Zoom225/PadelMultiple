@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { AuthApiService } from '../api/auth-api.service';
 import { MEMBER_SESSION_KEY } from '../auth/member-session.service';
 import { memberGuard } from './member.guard';
 
@@ -9,7 +10,10 @@ describe('memberGuard', () => {
     localStorage.clear();
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      providers: [provideRouter([])]
+      providers: [
+        provideRouter([]),
+        { provide: AuthApiService, useValue: { loginMembre: vi.fn() } }, // ← juste ça
+      ],
     });
   });
 
@@ -25,16 +29,20 @@ describe('memberGuard', () => {
     localStorage.setItem(
       MEMBER_SESSION_KEY,
       JSON.stringify({
-        id: 3,
-        matricule: 'G1234',
-        nom: 'Doe',
-        prenom: 'Jane',
-        email: 'jane@example.com',
-        typeMembre: 'GLOBAL',
-        siteId: null,
-        siteNom: null,
-        solde: 0
-      })
+        member: {
+          id: 3,
+          matricule: 'G1234',
+          nom: 'Doe',
+          prenom: 'Jane',
+          email: 'jane@example.com',
+          typeMembre: 'GLOBAL',
+          siteId: null,
+          siteNom: null,
+          solde: 0,
+          token: null,
+        },
+        token: null,
+      }),
     );
 
     const result = TestBed.runInInjectionContext(() => memberGuard({} as never, {} as never));
@@ -42,4 +50,3 @@ describe('memberGuard', () => {
     expect(result).toBe(true);
   });
 });
-

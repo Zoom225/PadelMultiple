@@ -199,10 +199,8 @@ describe('MemberCreateMatchPage', () => {
 
     expect(matchesApiMock.create).toHaveBeenCalledWith({
       terrainId: 10,
-      organisateurId: 1,
-      date: component.minBookingDate(),
-      heureDebut: '09:00',
-      typeMatch: 'PRIVE'
+      matchDate: `${component.minBookingDate()}T09:00:00`,
+      matchType: 'PRIVE',
     });
     expect(membresApiMock.getByMatricule).toHaveBeenCalledWith('G1002');
     expect(membresApiMock.getByMatricule).toHaveBeenCalledWith('L10001');
@@ -233,4 +231,3 @@ describe('MemberCreateMatchPage', () => {
     expect(component.errorMessage()).toContain(component.minBookingDate());
   });
 });
-

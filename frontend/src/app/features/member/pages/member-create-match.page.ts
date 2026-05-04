@@ -347,34 +347,15 @@ export class MemberCreateMatchPage {
       matchType: typeMatch
     };
 
-    this.matchesApi
-      .create(payload)
-      .subscribe({
-        next: (createdMatch) => {
-          this.handleInvites(createdMatch, this.member()!);
-        },
-        error: (error) => {
-          // LOGS DÉTAILLÉS POUR DEBUG
-          console.error('FULL MATCH CREATION ERROR', error);
-          console.error('error.error =', error?.error);
-          console.error('error.error.message =', error?.error?.message);
-          console.error('error.message =', error?.message);
-          // Affichage du message backend exact si présent
-          this.loading.set(false);
-          // Extraction prioritaire du message backend exact
-          let backendMessage = '';
-          if (error?.error?.message) {
-            backendMessage = error.error.message;
-          } else if (error?.message) {
-            backendMessage = error.message;
-          }
-          if (backendMessage) {
-            this.errorMessage.set('⛔ ' + backendMessage);
-          } else {
-            this.errorMessage.set(this.toFriendlyCreationErrorMessage(error));
-          }
-        }
-      });
+    this.matchesApi.create(payload).subscribe({
+      next: (createdMatch) => {
+        this.handleInvites(createdMatch, this.member()!);
+      },
+      error: (error) => {
+        this.loading.set(false); // ← gardé ✅
+        this.errorMessage.set(this.toFriendlyCreationErrorMessage(error));
+      }
+    });
   }
 
   private applyMinimumBookingDate(): void {
