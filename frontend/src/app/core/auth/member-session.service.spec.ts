@@ -1,11 +1,20 @@
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthApiService } from '../api/auth-api.service';
 import { MEMBER_SESSION_KEY, MemberSessionService } from './member-session.service';
 
 describe('MemberSessionService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: AuthApiService,
+          useValue: { loginMembre: vi.fn() }, // ← mock AuthApiService
+        },
+      ],
+    });
   });
 
   it('should persist and restore a member session', () => {
@@ -33,16 +42,19 @@ describe('MemberSessionService', () => {
     localStorage.setItem(
       MEMBER_SESSION_KEY,
       JSON.stringify({
-        id: 9,
-        matricule: 'S12345',
-        nom: 'Smith',
-        prenom: 'Anna',
-        email: 'anna@example.com',
-        typeMembre: 'SITE',
-        siteId: 5,
-        siteNom: 'Padel Bruxelles',
-        solde: 12
-      })
+        member: {
+          id: 9,
+          matricule: 'S12345',
+          nom: 'Smith',
+          prenom: 'Anna',
+          email: 'anna@example.com',
+          typeMembre: 'SITE',
+          siteId: 5,
+          siteNom: 'Padel Bruxelles',
+          solde: 12,
+        },
+        token: null,
+      }),
     );
 
     TestBed.configureTestingModule({});
