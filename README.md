@@ -20,10 +20,9 @@ Application web complète pour la gestion d’un club de padel, composée d’un
 
 ---
 
-## Commandes d’exécution
+## Commandes d'exécution et de test
 
-### 1. Lancer avec Docker (recommandé pour tout avoir prêt)
-
+### Commandes Docker
 - **Démarrer tous les services (backend, base PostgreSQL, etc.)** :
 ```powershell
 docker-compose up --build
@@ -33,49 +32,31 @@ docker-compose up --build
 docker-compose down
 ```
 
-#### Configuration de la base PostgreSQL via Docker
-
-- **Nom du service** : postgres
-- **Image** : postgres:15
-- **Nom du conteneur** : padel-db
-- **Variables d'environnement** :
-    - POSTGRES_DB: padelService
-    - POSTGRES_USER: padel
-    - POSTGRES_PASSWORD: padel
-- **Port local** : 5440 (accès à la base sur `localhost:5440`)
-- **Volume persistant** : padel-db-data
-
-**Exemple de connexion JDBC pour le backend :**
-```
-jdbc:postgresql://localhost:5440/padelService
-Utilisateur : padel
-Mot de passe : padel
-```
-
----
-
-### 2. Backend (Spring Boot)
-
+### Commandes Backend
 - **Compiler et lancer le backend** :
 ```powershell
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
+
+### Commandes Frontend
+- **Installer les dépendances et lancer le serveur de développement** :
+```powershell
+cd frontend
+npm install
+npm start
+```
+
+### Tests Backend
 - **Lancer tous les tests unitaires (contrôleurs, services, repositories)** :
 ```powershell
 ./mvnw test
 ```
-- **Méthodologie de test** :
-  - Les tests sont écrits avec JUnit et Spring Boot Test.
-  - Les classes de test se trouvent dans `src/test/java/`.
-  - Les tests couvrent les couches contrôleur, service et repository.
-  - Pour exécuter un test spécifique, utilisez :
-    ```powershell
-    ./mvnw -Dtest=NomDeLaClasseDeTest test
-    ```
-
-#### Principales classes de test et commandes associées
-
+- **Exécuter un test spécifique** (remplacez `NomDeLaClasseDeTest` par le nom de la classe) :
+```powershell
+./mvnw -Dtest=NomDeLaClasseDeTest test
+```
+- **Exemples de commandes pour les tests principaux** :
 | Couche         | Classe de test                                 | Commande d'exécution                                 |
 |---------------|------------------------------------------------|------------------------------------------------------|
 | Contrôleur    | com.padelPlay.PadelPlayApplicationTests         | ./mvnw -Dtest=PadelPlayApplicationTests test         |
@@ -84,23 +65,13 @@ Mot de passe : padel
 | Service       | com.padelPlay.service.PaiementServiceTest       | ./mvnw -Dtest=PaiementServiceTest test               |
 | Service       | com.padelPlay.service.ReservationServiceTest    | ./mvnw -Dtest=ReservationServiceTest test            |
 
-> Remplacez le nom de la classe si vous souhaitez exécuter d'autres tests présents dans le dossier `src/test/java/`.
-
----
-
-### 3. Frontend (Angular)
-
-- **Installer les dépendances et lancer le serveur de développement** :
-```powershell
-cd frontend
-npm install
-npm start
-```
+### Tests Frontend
 - **Lancer les tests unitaires** :
 ```powershell
+cd frontend
 npm run test
 ```
- 
+
 ---
 
 ## Connexion à la base de données
@@ -169,43 +140,5 @@ npm run test
 
 ---
 
-## Exemples de tests unitaires (backend)
-
-Voici comment exécuter des tests précis sur les principales classes de test :
-
-| Couche         | Classe de test                                 | Commande d'exécution                                 |
-|---------------|------------------------------------------------|------------------------------------------------------|
-| Contrôleur    | PadelPlayApplicationTests                      | ./mvnw -Dtest=PadelPlayApplicationTests test         |
-| Service       | MatchServiceTest                               | ./mvnw -Dtest=MatchServiceTest test                  |
-| Service       | MembreServiceTest                              | ./mvnw -Dtest=MembreServiceTest test                 |
-| Service       | PaiementServiceTest                            | ./mvnw -Dtest=PaiementServiceTest test               |
-| Service       | ReservationServiceTest                         | ./mvnw -Dtest=ReservationServiceTest test            |
-
-**Exemple d’exécution d’un test service :**
-```powershell
-./mvnw -Dtest=MembreServiceTest test
-```
-
-**Exemple d’exécution d’un test contrôleur :**
-```powershell
-./mvnw -Dtest=PadelPlayApplicationTests test
-```
-
-> Adaptez le nom de la classe selon le composant à tester. Les résultats s’affichent dans la console et dans le dossier `target/surefire-reports/`.
-
----
-
-## Commande générale pour lancer tous les tests backend
-
-Pour exécuter l’ensemble des tests (contrôleurs, services, repositories) :
-
-```powershell
-./mvnw test
-```
-
-Les résultats s’affichent dans la console et sont enregistrés dans le dossier `target/surefire-reports/`.
-
----
-
 ## Auteurs
-Projet réalisé par l’équipe PadelMultiple.
+Projet réalisé par KANGOUTE AZOUMANAN " etudiant en developpement d'application "
