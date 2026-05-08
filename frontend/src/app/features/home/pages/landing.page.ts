@@ -60,7 +60,7 @@ import { MemberSessionService } from '../../../core/auth/member-session.service'
 
       <mat-card class="card-soft">
         <mat-card-header>
-          <mat-card-title>Resultat test API</mat-card-title>
+          <mat-card-title>kangoute versionning</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           @if (loading()) {
