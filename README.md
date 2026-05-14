@@ -88,8 +88,7 @@ npm run test
 - **Mot de passe** : `padel`
 
 > Ces paramètres sont configurables dans `src/main/resources/application.properties` ou dans les variables d’environnement Docker.
-
----
+> NB: Pour la creation de match verifié que dans la table le montant 60 euro est bien present dans les prix sinon tu pour l'ajouté manuellement  et pousser---
 
 ## Comptes de connexion par défaut (pour tests)
 
