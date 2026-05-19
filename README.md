@@ -127,7 +127,6 @@ npm run test
 
 ## Accès à l’application
 - **Frontend** : http://localhost:4200
-- **Backend API** : http://localhost:8080/api
 - **Swagger (documentation API)** : http://localhost:8080/swagger-ui.html
 
 ---
