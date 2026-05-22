@@ -39,6 +39,23 @@ docker-compose down
 ./mvnw spring-boot:run
 ```
 
+### Compilation via IDE (IntelliJ / Eclipse)
+- Si vous préférez lancer le backend depuis un IDE (par exemple IntelliJ IDEA ou Eclipse), vous pouvez exécuter la classe principale directement :
+  1. Ouvrez `src/main/java/com/padelPlay/PadelPlayApplication.java`.
+  2. Cliquez sur la petite flèche verte (Run) à gauche de la méthode `main` pour lancer l'application la première fois sur votre PC.
+  3. Si c'est la première fois sur ce poste, vérifiez que le JDK est bien configuré (Java 21) :
+     - IntelliJ : File > Project Structure > Project SDK, ou configurez dans File > Settings > Build, Execution, Deployment > Build Tools.
+     - Eclipse : Window > Preferences > Java > Installed JREs.
+  4. Optionnel — créer une configuration de lancement pour faciliter les exécutions futures :
+     - Run > Edit Configurations > + > Application
+     - Main class : `com.padelPlay.PadelPlayApplication`
+     - Module / Classpath : sélectionnez le module du projet (ex. `padelmultiple`)
+     - Appliquez et lancez.
+
+- Remarques :
+  - Exécuter la classe principale via l'IDE effectue une compilation automatique et utilise la configuration Java de l'IDE — pratique pour un premier démarrage ou pour le débogage.
+  - Si vous rencontrez des problèmes, vérifiez que le projet a bien été importé en tant que projet Maven et que les dépendances sont résolues.
+
 ### Commandes Frontend
 - **Installer les dépendances et lancer le serveur de développement** :
 ```powershell
