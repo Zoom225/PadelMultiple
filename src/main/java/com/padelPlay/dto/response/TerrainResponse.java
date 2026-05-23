@@ -12,4 +12,5 @@ public class TerrainResponse {
     private String nom;
     private Long siteId;
     private String siteNom;
+    private Double prix;
 }

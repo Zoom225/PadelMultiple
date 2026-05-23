@@ -20,6 +20,7 @@ public class TerrainMapper {
                 .nom(terrain.getNom())
                 .siteId(terrain.getSite() != null ? terrain.getSite().getId() : null)
                 .siteNom(terrain.getSite() != null ? terrain.getSite().getNom() : null)
+                .prix(terrain.getPrix())
                 .build();
     }
 }

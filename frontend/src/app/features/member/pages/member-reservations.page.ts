@@ -207,7 +207,7 @@ import { extractApiErrorMessage } from '../../../shared/utils/api-error.util';
                 color="primary"
                 type="button"
                 (click)="pay(reservation)"
-                [disabled]="reservation.paiement?.statut !== 'EN_ATTENTE' || actionId() === reservation.id"
+                [disabled]="reservation.statut === 'ANNULEE' || reservation.paiement?.statut !== 'EN_ATTENTE' || actionId() === reservation.id"
               >
                 💳 Payer
               </button>
@@ -593,7 +593,9 @@ export class MemberReservationsPage {
     if (statut === 'REMBOURSE') {
       return 'ds-badge-info';
     }
+    if (statut === 'ANNULE') {
+      return 'ds-badge-danger';
+    }
     return 'ds-badge-neutral';
   }
 }
-

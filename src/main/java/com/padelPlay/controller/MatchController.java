@@ -1,5 +1,6 @@
 package com.padelPlay.controller;
 
+import com.padelPlay.dto.request.MatchRequest;
 import com.padelPlay.match.dto.CreateMatchRequest;
 import com.padelPlay.match.dto.MatchDto;
 import com.padelPlay.service.MatchService;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class MatchController {
+
     private final MatchService matchService;
 
     @PostMapping
@@ -27,8 +29,6 @@ public class MatchController {
         String username = authentication.getName();
         log.info("Requête de création de match reçue de l'utilisateur '{}' pour le terrain ID {}", username, request.terrainId());
 
-        // La sécurité Spring gère déjà le cas de l'utilisateur anonyme,
-        // mais une vérification explicite peut être conservée pour des logs plus clairs.
         if (username == null || "anonymousUser".equals(username)) {
             log.warn("Tentative de création de match par un utilisateur non authentifié.");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -45,9 +45,42 @@ public class MatchController {
 
     @GetMapping("/public")
     public ResponseEntity<List<MatchDto>> getPublicMatches() {
-        // Correction : Le service retourne maintenant directement une List<MatchDto>.
-        // La conversion manuelle et la dépendance vers MatchMapper ne sont plus nécessaires ici.
-        List<MatchDto> matches = matchService.getPublicAvailableMatches();
-        return ResponseEntity.ok(matches);
+        return ResponseEntity.ok(matchService.getPublicAvailableMatches());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MatchDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(matchService.getMatchDtoById(id));
+    }
+
+    @GetMapping("/organisateur/{organisateurId}")
+    public ResponseEntity<List<MatchDto>> getByOrganisateur(@PathVariable Long organisateurId) {
+        return ResponseEntity.ok(matchService.findByOrganisateur(organisateurId));
+    }
+
+    @GetMapping("/site/{siteId}")
+    public ResponseEntity<List<MatchDto>> getBySite(@PathVariable Long siteId) {
+        return ResponseEntity.ok(matchService.findBySite(siteId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MatchDto> updateMatch(
+            @PathVariable Long id,
+            @Valid @RequestBody MatchRequest request) {
+        return ResponseEntity.ok(matchService.updateMatch(id, request));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelMatch(
+            @PathVariable Long id,
+            @RequestParam Long requesterId) {
+        matchService.cancelMatch(id, requesterId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/convert-public")
+    public ResponseEntity<Void> convertToPublic(@PathVariable Long id) {
+        matchService.convertToPublic(id);
+        return ResponseEntity.noContent().build();
     }
 }

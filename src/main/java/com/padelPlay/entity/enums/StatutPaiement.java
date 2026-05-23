@@ -3,5 +3,6 @@ package com.padelPlay.entity.enums;
 public enum StatutPaiement {
     EN_ATTENTE,   // paiement pas encore effectué
     PAYE,         // paiement confirmé
-    REMBOURSE     // en cas d'annulation
+    REMBOURSE,    // remboursé après annulation d'une réservation déjà payée
+    ANNULE        // annulé suite à l'annulation d'une réservation non payée
 }

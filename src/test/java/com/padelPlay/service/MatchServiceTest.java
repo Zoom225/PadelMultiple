@@ -23,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
@@ -83,19 +84,21 @@ class MatchServiceTest {
                 "PUBLIC"
         );
 
-        // Correction : Utiliser le constructeur complet de MatchDto
         matchDto = new MatchDto(
                 1L,
                 terrain.getId(),
                 terrain.getNom(),
+                null, // siteNom
                 organisateur.getId(),
                 organisateur.getPrenom() + " " + organisateur.getNom(),
-                createMatchRequest.matchDate(),
-                createMatchRequest.matchDate().plusMinutes(90),
+                createMatchRequest.matchDate().toLocalDate(),
+                createMatchRequest.matchDate().toLocalTime(),
+                createMatchRequest.matchDate().plusMinutes(90).toLocalTime(),
                 TypeMatch.PUBLIC,
                 StatutMatch.PLANIFIE,
                 1,
-                5.0 // 20.0 / 4
+                5.0, // 20.0 / 4
+                null  // dateConversionPublic
         );
     }
 
@@ -182,7 +185,7 @@ class MatchServiceTest {
         });
         assertEquals("Ce créneau est déjà réservé sur le terrain : " + terrain.getId(), exception.getMessage());
     }
-    
+
     @Test
     @DisplayName("createMatch - Échoue si le membre n'est pas trouvé")
     void createMatch_ShouldFail_WhenMemberNotFound() {

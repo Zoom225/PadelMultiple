@@ -64,12 +64,12 @@ public class DataInitializer implements CommandLineRunner {
         // ----------------------------------------------------------------
         // Terrains
         // ----------------------------------------------------------------
-        terrainRepository.save(Terrain.builder().nom("Court A").prix(60.0).site(siteLyon).build());
-        terrainRepository.save(Terrain.builder().nom("Court B").prix(60.0).site(siteLyon).build());
-        terrainRepository.save(Terrain.builder().nom("Court C").prix(60.0).site(siteLyon).build());
+        terrainRepository.save(Terrain.builder().nom("Court A").site(siteLyon).prix(60.0).build());
+        terrainRepository.save(Terrain.builder().nom("Court B").site(siteLyon).prix(60.0).build());
+        terrainRepository.save(Terrain.builder().nom("Court C").site(siteLyon).prix(60.0).build());
 
-        terrainRepository.save(Terrain.builder().nom("Court 1").prix(60.0).site(siteParis).build());
-        terrainRepository.save(Terrain.builder().nom("Court 2").prix(60.0).site(siteParis).build());
+        terrainRepository.save(Terrain.builder().nom("Court 1").site(siteParis).prix(70.0).build());
+        terrainRepository.save(Terrain.builder().nom("Court 2").site(siteParis).prix(70.0).build());
 
         log.info("DataInitializer : {} courts created", terrainRepository.count());
 

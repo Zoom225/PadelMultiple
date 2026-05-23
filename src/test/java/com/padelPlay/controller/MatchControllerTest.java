@@ -22,7 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -69,9 +71,20 @@ class MatchControllerTest {
         validCreateMatchRequest = new CreateMatchRequest(1L, startTime, "PUBLIC");
 
         matchDto = new MatchDto(
-                1L, 1L, "Court Central", 10L, "John Doe",
-                startTime, startTime.plusMinutes(90),
-                TypeMatch.PUBLIC, StatutMatch.PLANIFIE, 1, 15.0
+                1L,                                        // id
+                1L,                                        // terrainId
+                "Court Central",                           // terrainNom
+                "Padel Club Lyon",                         // siteNom
+                10L,                                       // organisateurId
+                "John Doe",                                // organisateurNom
+                startTime.toLocalDate(),                   // date
+                startTime.toLocalTime(),                   // heureDebut
+                startTime.plusMinutes(90).toLocalTime(),   // heureFin
+                TypeMatch.PUBLIC,                          // typeMatch
+                StatutMatch.PLANIFIE,                      // statut
+                1,                                         // nbJoueursActuels
+                15.0,                                      // prixParJoueur
+                null                                       // dateConversionPublic
         );
     }
 

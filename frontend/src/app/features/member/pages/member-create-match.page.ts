@@ -94,7 +94,7 @@ const createMinBookingDateValidator = (getMinDate: () => string): ValidatorFn =>
               <mat-label>Terrain</mat-label>
               <mat-select formControlName="terrainId" [disabled]="!terrains().length">
                 @for (terrain of terrains(); track terrain.id) {
-                  <mat-option [value]="terrain.id">{{ terrain.nom }}</mat-option>
+                  <mat-option [value]="terrain.id">{{ terrain.nom }}{{ terrain.prix != null ? ' — ' + terrain.prix + ' €' : '' }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
