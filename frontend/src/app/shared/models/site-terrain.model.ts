@@ -29,6 +29,7 @@ export interface TerrainResponse {
   nom: string;
   siteId: number;
   siteNom: string;
+  prix: number | null;
 }
 
 export interface JourFermetureRequest {
@@ -46,4 +47,3 @@ export interface JourFermetureResponse {
   siteId: number | null;
   siteNom: string | null;
 }
-

@@ -40,6 +40,11 @@ public class PaiementServiceImpl implements PaiementService {
             throw new BusinessException("Only the member of this reservation can pay");
         }
 
+        // règle : impossible de payer une réservation annulée
+        if (reservation.getStatut() == com.padelPlay.entity.enums.StatutReservation.ANNULEE) {
+            throw new BusinessException("Cannot pay for a cancelled reservation");
+        }
+
         Paiement paiement = reservation.getPaiement();
         if (paiement == null) {
             throw new ResourceNotFoundException("No payment found for reservation : " + reservationId);
@@ -47,6 +52,10 @@ public class PaiementServiceImpl implements PaiementService {
 
         if (paiement.getStatut() == StatutPaiement.PAYE) {
             throw new BusinessException("Payment already done for this reservation");
+        }
+
+        if (paiement.getStatut() == StatutPaiement.ANNULE) {
+            throw new BusinessException("Payment has been cancelled for this reservation");
         }
 
         // règle : si solde dû, on l'ajoute au montant

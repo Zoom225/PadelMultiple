@@ -1,5 +1,6 @@
 package com.padelPlay.service.impl;
 
+import com.padelPlay.dto.request.MatchRequest;
 import com.padelPlay.entity.Match;
 import com.padelPlay.entity.Membre;
 import com.padelPlay.entity.Terrain;
@@ -104,9 +105,78 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
+    public List<MatchDto> findByOrganisateur(Long organisateurId) {
+        return matchRepository.findByOrganisateurId(organisateurId)
+                .stream()
+                .map(matchMapper::toMatchDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MatchDto> findBySite(Long siteId) {
+        return matchRepository.findByTerrainSiteId(siteId)
+                .stream()
+                .map(matchMapper::toMatchDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Match getById(Long id) {
         return matchRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Match non trouvé avec l'ID : " + id));
+    }
+
+    @Override
+    public MatchDto getMatchDtoById(Long id) {
+        return matchMapper.toMatchDto(getById(id));
+    }
+
+    @Override
+    @Transactional
+    public MatchDto updateMatch(Long matchId, MatchRequest request) {
+        Match match = getById(matchId);
+
+        if (match.getStatut() == StatutMatch.ANNULE) {
+            throw new BusinessException("Impossible de modifier un match annulé.");
+        }
+        if (!match.getOrganisateur().getId().equals(request.getOrganisateurId())) {
+            throw new BusinessException("Seul l'organisateur peut modifier ce match.");
+        }
+
+        Terrain terrain = terrainService.getById(request.getTerrainId());
+        LocalDateTime dateDebut = request.getDate().atTime(request.getHeureDebut());
+        LocalDateTime dateFin = dateDebut.plusMinutes(terrain.getSite().getDureeMatchMinutes());
+
+        validateSiteNotClosed(terrain, dateDebut.toLocalDate());
+        validateSiteOpeningHours(terrain, dateDebut.toLocalTime(), dateFin.toLocalTime());
+
+        if (!isSlotAvailableExcluding(terrain.getId(), dateDebut, dateFin, matchId)) {
+            throw new BusinessException("Ce créneau est déjà réservé sur le terrain : " + terrain.getId());
+        }
+
+        match.setTerrain(terrain);
+        match.setDateDebut(dateDebut);
+        match.setDateFin(dateFin);
+        match.setTypeMatch(request.getTypeMatch());
+
+        return matchMapper.toMatchDto(matchRepository.save(match));
+    }
+
+    @Override
+    @Transactional
+    public void cancelMatch(Long matchId, Long requesterId) {
+        Match match = getById(matchId);
+
+        if (match.getStatut() == StatutMatch.ANNULE) {
+            throw new BusinessException("Ce match est déjà annulé.");
+        }
+        if (!match.getOrganisateur().getId().equals(requesterId)) {
+            throw new BusinessException("Seul l'organisateur peut annuler ce match.");
+        }
+
+        match.setStatut(StatutMatch.ANNULE);
+        matchRepository.save(match);
+        log.info("Match {} annulé par l'organisateur {}", matchId, requesterId);
     }
 
     @Override
@@ -128,6 +198,7 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
+    @Override
     @Transactional
     public void convertToPublic(Long matchId) {
         Match match = getById(matchId);
@@ -172,6 +243,11 @@ public class MatchServiceImpl implements MatchService {
     private boolean isSlotAvailable(Long terrainId, LocalDateTime start, LocalDateTime end) {
         List<Match> existingMatches = matchRepository.findOverlappingMatches(terrainId, start, end, StatutMatch.ANNULE);
         return existingMatches.isEmpty();
+    }
+
+    private boolean isSlotAvailableExcluding(Long terrainId, LocalDateTime start, LocalDateTime end, Long excludedMatchId) {
+        List<Match> existingMatches = matchRepository.findOverlappingMatches(terrainId, start, end, StatutMatch.ANNULE);
+        return existingMatches.stream().allMatch(m -> m.getId().equals(excludedMatchId));
     }
 
     private void validateBookingDelay(Membre membre, LocalDate matchDate) {

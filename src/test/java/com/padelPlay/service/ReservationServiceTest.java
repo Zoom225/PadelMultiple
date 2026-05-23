@@ -381,8 +381,8 @@ class ReservationServiceTest {
         }
 
         @Test
-        @DisplayName("✅ should NOT refund payment when reservation cancelled before payment")
-        void shouldNotRefundWhenNotYetPaid() {
+        @DisplayName("✅ should cancel payment when reservation cancelled before payment")
+        void shouldCancelPaymentWhenNotYetPaid() {
             Paiement paiement = Paiement.builder()
                     .montant(15.0)
                     .statut(StatutPaiement.EN_ATTENTE) // pas encore payé
@@ -401,9 +401,9 @@ class ReservationServiceTest {
 
             reservationService.cancel(1L);
 
-            // paiement reste EN_ATTENTE — pas de remboursement
-            assertThat(paiement.getStatut()).isEqualTo(StatutPaiement.EN_ATTENTE);
-            verify(paiementRepository, never()).save(any());
+            // paiement passe à ANNULE — réservation annulée avant paiement
+            assertThat(paiement.getStatut()).isEqualTo(StatutPaiement.ANNULE);
+            verify(paiementRepository, times(1)).save(paiement);
         }
 
         @Test

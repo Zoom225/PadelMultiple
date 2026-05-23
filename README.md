@@ -115,7 +115,7 @@ npm run test
   - Mot de passe : (défini lors de l’inscription ou par l’admin)
 - **Emma Dubois** (GLOBAL) :
   - Email : emma.dubois@email.com
-  - Mot de passe : (défini lors de l’inscription ou par l’admin)
+  - Mot de passe : 
 - **Tom Bernard** (SITE Lyon) :
   - Email : tom.bernard@email.com
   - Mot de passe : (défini lors de l’inscription ou par l’admin)

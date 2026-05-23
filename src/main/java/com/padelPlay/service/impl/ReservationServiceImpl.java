@@ -124,10 +124,14 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setStatut(StatutReservation.ANNULEE);
         reservationRepository.save(reservation);
 
-        // rembourser si déjà payé
+        // mettre à jour le paiement selon son statut actuel
         Paiement paiement = reservation.getPaiement();
-        if (paiement != null && paiement.getStatut() == StatutPaiement.PAYE) {
-            paiement.setStatut(StatutPaiement.REMBOURSE);
+        if (paiement != null) {
+            if (paiement.getStatut() == StatutPaiement.PAYE) {
+                paiement.setStatut(StatutPaiement.REMBOURSE);
+            } else if (paiement.getStatut() == StatutPaiement.EN_ATTENTE) {
+                paiement.setStatut(StatutPaiement.ANNULE);
+            }
             paiementRepository.save(paiement);
         }
 
