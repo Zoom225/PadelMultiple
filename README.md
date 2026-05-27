@@ -35,6 +35,7 @@ docker-compose down
 ### Commandes Backend
 - **Compiler et lancer le backend** :
 ```powershell
+possibilité de cliquer sur la classe principale `PadelPlayApplication` dans votre IDE pour lancer le backend directement, ou utiliser les commandes suivantes :
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
